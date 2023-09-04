@@ -1,58 +1,30 @@
 # Use a pipeline as a high-level helper
 from transformers import pipeline
-from transformers import LlamaTokenizer, LlamaForCausalLM, pipelinepy
 
-from langchain.llms import HuggingFacePipeline
-from langchain import PromptTemplate, LLMChain
+from transformers import LlamaForCausalLM, LlamaTokenizer,AutoTokenizer
+from datasets import load_dataset,load_from_disk
 
+import transformers
+import torch
 
-#pipe = pipeline("text-generation", model="meta-llama/Llama-2-7b-chat-hf")
-
-text = """   
-can you generate a dsl language given a mapping index
-"""
-
-
-base_model = LlamaForCausalLM.from_pretrained(
-    "chavinlo/alpaca-native",
-    load_in_8bit=True,
-    device_map='auto',
-)
+tokenizer = LlamaTokenizer.from_pretrained("codellama/CodeLlama-7b-hf")
+model = LlamaForCausalLM.from_pretrained("codellama/CodeLlama-7b-Instruct-hf")
 
 
 
 
-tokenizer = LlamaTokenizer.from_pretrained("chavinlo/alpaca-native")
+exit()
 
-pipe = pipeline(
-    "text-generation",
-    model=base_model,
-    tokenizer=tokenizer,
-    max_length=500,
-    temperature=0.3,
-    top_p=0.95,
-    repetition_penalty=1.2
-)
 
-local_llm = HuggingFacePipeline(pipeline=pipe)
+dataset = load_from_disk("./resources/sqlContext")
 
-template = """
-Write a SQL Query given the table name {Table} and columns as a list {Columns} for the given question : 
-{question}.
-"""
 
-prompt = PromptTemplate(template=template, input_variables=["Table","question","Columns"])
+def tokenize_function(sample):
+    return tokenizer(sample["text"], padding="max_length", truncation=True)
 
-llm_chain = LLMChain(prompt=prompt, llm=local_llm)
+tokenized_datasets = dataset.map(tokenize_function, batched=True)
 
-def get_llm_response(tble,question,cols):
-    llm_chain = LLMChain(prompt=prompt, 
-                         llm=local_llm
-                         )
-    response= llm_chain.run({"Table" : tble,"question" :question, "Columns" : cols})
-    print(response)
+small_train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(1000))
+small_eval_dataset = tokenized_datasets["test"].shuffle(seed=42).select(range(1000))
 
-tble = "employee"
-cols = ["id","name","date_of_birth","band","manager_id"]
-question = "Query the count of employees in band L6 with 239045 as the manager ID"
-get_llm_response(tble,question,cols)
+
