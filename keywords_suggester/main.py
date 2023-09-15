@@ -14,16 +14,10 @@ from llama_index import ServiceContext
 # Make our printing look nice
 from llama_index.schema import MetadataMode
 
-from langchain.llms import LlamaCpp
-from langchain import PromptTemplate, LLMChain
+from langchain import PromptTemplate
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
-#service_context = ServiceContext.from_defaults(llm="local")
-
-#/Users/thenor/Desktop/Aldo/Altro/Uni/ESSAI/resources/codellama-7b-instruct.ggmlv3.Q6_K.bin
-#export MODEL=/Users/thenor/Desktop/Aldo/Altro/Uni/ESSAI/resources/codellama-7b-instruct.ggmlv3.Q6_K.bin
-#python3 -m llama_cpp.server --model $MODEL  --n_gpu_layers 1
 
 
 required_exts = [".txt"]
@@ -50,8 +44,8 @@ print(documents[5].get_content(metadata_mode=MetadataMode.ALL))
 
 text_splitter = SentenceSplitter(
   separator=" ",
-  chunk_size=1024,
-  chunk_overlap=20,
+  chunk_size=200,
+  chunk_overlap=5,
 )
 
 
@@ -64,9 +58,7 @@ print(f"Parsed {len(nodes)} docs")
 
 #LLM SECTION
 
-template = """Question: {question}
-
-Answer: Let's work this out in a step by step way to be sure we have the right answer."""
+template = """I will give you a question: {question}"""
 
 prompt = PromptTemplate(template=template, input_variables=["question"])
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -114,31 +106,5 @@ index.storage_context.persist(persist_dir="keywords_suggester/index_storage")
 
 
 query_engine = index.as_query_engine()
-response = query_engine.query("What car is red?")
+response = query_engine.query("Tell me something about car")
 print(response)
-
-
-exit()
-configDict = {
-    "temperature" : 0.8,
-    "top_p" : 0.9,
-    "top_k": 30,
-    "repetition_penalty" : 1.1,
-    "max_new_tokens" :2048,
-    #"gpu_layers" : 30,
-    "repetition_penalty" : 1.15
-}
-
-
-
-prompt = """
-Question: A rap battle between Stephen Colbert and John Oliver
-"""
-
-
-#An Index is a data structure that allows us to quickly retrieve relevant context for a user query. For LlamaIndex, it’s the core foundation for retrieval-augmented generation (RAG) use-cases.
-#index = VectorStoreIndex(nodes)
-
-#Resuse nodes: Reusing Nodes across Index Structures
-
-
