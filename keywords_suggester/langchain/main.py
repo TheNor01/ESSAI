@@ -1,12 +1,17 @@
-from langchain.document_loaders import DirectoryLoader
+from loaders.DIRLoader import DIRLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import TFIDFRetriever
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 
-loader = DirectoryLoader('keywords_suggester/data/dataset/automotive', glob="**/*.txt")
+
+
+loader = DIRLoader('keywords_suggester/data/dataset/test',metadata_columns=["user"],content_column="content")
 docs = loader.load()
 
+print(docs[0])
+
+exit()
 
 
 
@@ -46,6 +51,6 @@ for split_docs_chunk in split_docs_chunked:
 
 print("DONE")
 
-query = "What cars are fashion?"
-docs = vectordb.similarity_search(query)
-print(docs[0].page_content)
+#query = "What cars are fashion?"
+#docs = vectordb.similarity_search(query)
+#print(docs[0].page_content)
