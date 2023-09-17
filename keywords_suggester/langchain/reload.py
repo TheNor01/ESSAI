@@ -15,17 +15,18 @@ persist_directory = "keywords_suggester/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
+
+"""
+
 loader = DirectoryLoader('keywords_suggester/data/dataset/automotive', glob="**/*.txt")
 docs = loader.load()
 
 retrieverTF = TFIDFRetriever.from_documents(docs)
 result = retrieverTF.get_relevant_documents("tesla")
 
-for doc in docs:
-    print(doc.page_content)
+print(len(result))
+"""
 
-
-exit()
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
 
 
@@ -34,14 +35,15 @@ vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_
 
 #raccomandation system: vespa,weaviate
 
-question = "What are the approaches to car repair?"
-docs = vectordb.similarity_search(question,k=2)
+question = "i love art"
+docs = vectordb.similarity_search(question,k=5)
 
 for doc in docs:
     print(doc.page_content)
+    print(doc.metadata)
 
 
-
+exit()
 model_url = "https://huggingface.co/TheBloke/Llama-2-7B-chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf"
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
@@ -57,6 +59,8 @@ You are a helpful, respectful and honest assistant. Always answer as helpfully a
 
 prompt = PromptTemplate(template=template, input_variables=["prompt"])
 """
+
+
 llm = LlamaCpp(
     # You can pass in the URL to a GGML model to download it automatically
     model_path="resources/llama-2-7b-chat.Q4_0.gguf",

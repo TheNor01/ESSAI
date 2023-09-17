@@ -31,7 +31,7 @@ class CSVLoader(BaseLoader):
         content_column: Optional[str] = None,
         metadata_columns: Optional[List[str]] = None,   # < ADDED
         csv_args: Optional[Dict] = None,
-        encoding: Optional[str] = None,
+        encoding: Optional[str] = None
     ):
         self.file_path = file_path
         self.source_column = source_column
@@ -45,7 +45,7 @@ class CSVLoader(BaseLoader):
 
         docs = []
         with open(self.file_path, newline="", encoding=self.encoding) as csvfile:
-            csv_reader = csv.DictReader(csvfile, **self.csv_args)  # type: ignore
+            csv_reader = csv.DictReader(csvfile,delimiter="|", **self.csv_args)  # type: ignore
             for i, row in enumerate(csv_reader):
                 content = row[self.content_column]
                 try:

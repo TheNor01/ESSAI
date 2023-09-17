@@ -13,7 +13,9 @@ def convert_to_csv(input_file_path, output_file_path,headers):
         csv_writer.writerow(headers)
         folder_metadata = input_file_path.split('/')[-2]
 
-        data = [content.strip(),"xxxxx",folder_metadata]
+        #truncate text to limit 
+
+        data = [content.strip()[0:200],"xxxxx",folder_metadata]
         csv_writer.writerow(data)
 
 
