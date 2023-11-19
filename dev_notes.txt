@@ -1,0 +1,9 @@
+https://www.reddit.com/r/LangChain/comments/170jigz/my_strategy_for_picking_a_vector_database_a/
+https://llamahub.ai/l/elasticsearch
+https://github.com/run-llama/llama-hub/tree/main
+
+
+
+1) Module semantic similatity
+    - OFFLINE DOCUMENTS LOAD
+    - ELASTIC SERACH LOAD ---> data

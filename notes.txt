@@ -1,0 +1,20 @@
+API PRICING INFO
+
+GPT-3.5 Turbo 
+
+gpt-3.5-turbo-instruct
+
+Model	Input	Output
+gpt-3.5-turbo-1106	$0.0010 / 1K tokens	$0.0020 / 1K tokens
+gpt-3.5-turbo-instruct	$0.0015 / 1K tokens	$0.0020 / 1K tokens
+
+
+You can think of tokens as pieces of words used for natural language processing. 
+For English text, 1 token is approximately 4 characters or 0.75 words. 
+As a point of reference, the collected works of Shakespeare are about 900,000 words or 1.2M tokens.
+
+To learn more about how tokens work and estimate your usage…
+
+https://community.openai.com/t/preparing-the-dataset-for-embeddings/110977
+https://community.openai.com/t/embedding-and-searching-from-similar-embeddings/248471/6
+https://openai.com/blog/new-and-improved-embedding-model

@@ -159,9 +159,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-*.txt
 *.bin
 *.pickle
 *.DS*
 *.json
 *.csv
+keywords_suggester/data/*
+keywords_suggester/data_transformed/*
