@@ -43,10 +43,14 @@ def process_directory(source_dir, destination_dir,headers):
             convert_to_csv(source_file_path, dest_file_path,headers)
 
 # Directory sorgente e di destinazione
-source_directory = "keywords_suggester/data/dataset"
-destination_directory = "keywords_suggester/data_transformed/dataset"
+#source_directory = "keywords_suggester/data/dataset"
+source_directory = "keywords_suggester/data_upload/dataset"
+destination_directory = "keywords_suggester/data_transformed_upload/dataset"
 
 custom_headers = ["content", "user","category"]
 
-# Chiama la funzione per elaborare la directory
-process_directory(source_directory, destination_directory,custom_headers)
+if os.path.isdir(source_directory):
+    # Chiama la funzione per elaborare la directory
+    process_directory(source_directory, destination_directory,custom_headers)
+else:
+    print("DIR DOES NOT EXIST")

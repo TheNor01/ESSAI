@@ -1,9 +1,15 @@
+import imp
+from tkinter import NO
 from loaders.DIRLoader import DIRLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import TFIDFRetriever
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.modules.LoaderEmbeddings import processChunksFromLocal
+
 import chromadb
+
+
 
 
 
@@ -47,16 +53,17 @@ https://python.langchain.com/docs/modules/data_connection/retrievers/parent_docu
 
 """
 
-
-vectordb=None
+vectordb = None
 
 for split_docs_chunk in split_docs_chunked:
     vectordb = Chroma.from_documents(
         documents=split_docs_chunk,
+        #collection_name=
         embedding=embed_model,
         persist_directory="keywords_suggester/index_storage_lang"
     )
-    vectordb.persist()
+    
+vectordb.persist()
 
 print("DONE")
 

@@ -1,9 +1,5 @@
 https://medium.com/vector-database/building-a-real-time-recommendation-system-722d8b987b78
-
-
 https://towardsdatascience.com/topic-modeling-with-llama-2-85177d01e174
-
-
 https://github.com/marqo-ai/marqo
 
 https://github.com/pengKiina/KeypartX

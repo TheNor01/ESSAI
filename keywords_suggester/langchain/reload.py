@@ -15,7 +15,6 @@ persist_directory = "keywords_suggester/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
-
 """
 
 loader = DirectoryLoader('keywords_suggester/data/dataset/automotive', glob="**/*.txt")
@@ -29,19 +28,56 @@ print(len(result))
 
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
 
+"""
+persistent_client = chromadb.PersistentClient(path=persist_directory)
+collection = persistent_client.get_collection("langchain",embedding_function=embed_model)
+langchain_chroma = Chroma(
+    client=persistent_client,
+    collection_name="collection_name",
+    embedding_function=embed_model,
+)
+print("There are", langchain_chroma._collection.count(), "in the collection")
+"""
+
 
 #https://python.langchain.com/docs/integrations/retrievers/
 #https://python.langchain.com/docs/modules/data_connection/retrievers/time_weighted_vectorstore
 
 #raccomandation system: vespa,weaviate
 
-question = "i love art"
-docs = vectordb.similarity_search(question,k=5)
+collection = vectordb.get()
+
+print("COLLECTION NAME - INFO")
+print(vectordb._collection)
+print(vectordb._collection.count())
+
+question = "dogs and humans are cutes"
+docs = vectordb.similarity_search(question,k=2)
 
 for doc in docs:
-    print(doc.page_content)
+    print("====")
     print(doc.metadata)
+    print(doc.page_content)
+    print("====")
 
+
+#test adding collection
+"""
+vectordb.add_documents(
+    embeddings=[1.5, 2.9, 3.4],
+    metadatas={"user": "test", "category": "testCat"},
+    documents="doc1000101",
+    ids="uri9",
+)
+"""
+#whereDoc = chromadb.WhereDocument
+
+
+
+docs = vectordb.get(where={"user": "d80b7"},limit=5,where_document={"$contains":"that"})
+
+print(docs["ids"])
+print(docs["metadatas"])
 
 exit()
 model_url = "https://huggingface.co/TheBloke/Llama-2-7B-chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf"
