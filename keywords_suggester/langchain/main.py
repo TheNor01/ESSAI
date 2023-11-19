@@ -6,9 +6,8 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import chromadb
 
 
-from modules.CromaClient import CromaClient
 
-loader = DIRLoader('keywords_suggester/data_transformed/dataset/',metadata_columns=["user","category"],content_column="content")
+loader = DIRLoader('keywords_suggester/data_transformed/dataset/food',metadata_columns=["user","category"],content_column="content")
 docs = loader.load()
 
 #print(docs[0])
@@ -31,6 +30,7 @@ def split_list(input_list, chunk_size):
         
 split_docs_chunked = split_list(all_splits, 166)
 
+#embed_model = HuggingFaceEmbeddings()
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
 #vectorstore = Chroma.from_documents(documents=all_splits, embedding=embed_model)
@@ -47,6 +47,9 @@ https://python.langchain.com/docs/modules/data_connection/retrievers/parent_docu
 
 """
 
+
+vectordb=None
+
 for split_docs_chunk in split_docs_chunked:
     vectordb = Chroma.from_documents(
         documents=split_docs_chunk,
@@ -61,5 +64,3 @@ collection = vectordb.get()
 
 print(collection) #ids, metadata, documents
 print(collection.keys())
-
-

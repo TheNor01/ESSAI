@@ -1,6 +1,6 @@
 #https://docs.trychroma.com/reference/Client
 
-
+"""
 import chromadb
 
 
@@ -20,3 +20,4 @@ class CromaClient():
     def ResetCroma(self):
         print("RESETTING")
         self.client.reset()
+"""

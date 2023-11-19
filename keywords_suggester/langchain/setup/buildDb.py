@@ -24,22 +24,26 @@ def initDbCroma(docs,embed_model):
 
     text_splitter = RecursiveCharacterTextSplitter(
         # Set a really small chunk size, just to show.
-        chunk_size = 50,
-        chunk_overlap  = 20,
+        chunk_size = 100,
+        chunk_overlap  = 10,
         length_function = len,
         add_start_index = True,
     )
 
     all_splits = text_splitter.split_documents(docs)
-    split_docs_chunked = split_list(all_splits, 120)
+    split_docs_chunked = split_list(all_splits, 165)
 
     
-    for split_docs_chunk in split_docs_chunked:
+    #print("TOTAL"+split_docs_chunked)))
+    for index, split_docs_chunk in enumerate(split_docs_chunked):
+
         vectordb = Chroma.from_documents(
             documents=split_docs_chunk,
             embedding=embed_model,
             persist_directory="keywords_suggester/index_storage_lang"
         )
+
+        print("Chunk loaded"+str(index))
 
     vectordb.persist()
     print("DONE")

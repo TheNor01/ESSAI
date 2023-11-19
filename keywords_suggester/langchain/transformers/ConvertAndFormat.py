@@ -1,5 +1,6 @@
 import os
 import csv
+import uuid
 
 # Funzione per convertire un file di testo in un file CSV
 def convert_to_csv(input_file_path, output_file_path,headers):
@@ -15,7 +16,8 @@ def convert_to_csv(input_file_path, output_file_path,headers):
 
         #truncate text to limit 
 
-        data = [content.strip()[0:200],"xxxxx",folder_metadata]
+        user = uuid.uuid4().hex[:5]
+        data = [content.strip(),user,folder_metadata]
         csv_writer.writerow(data)
 
 

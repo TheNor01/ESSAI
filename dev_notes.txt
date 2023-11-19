@@ -3,6 +3,13 @@ https://llamahub.ai/l/elasticsearch
 https://github.com/run-llama/llama-hub/tree/main
 
 
+python -m venv venv
+source venv/bin/activate
+
+deactivate
+
+rm -r venv
+pip cache purge
 
 1) Module semantic similatity
     - OFFLINE DOCUMENTS LOAD
