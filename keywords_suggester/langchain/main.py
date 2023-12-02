@@ -5,14 +5,14 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.retrievers import TFIDFRetriever
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.modules.LoaderEmbeddings import processChunksFromLocal
+from langchain.modules.LoaderEmbeddings import InitChromaDocsFromPath
 
 import chromadb
 
 
 
 
-
+"""
 loader = DIRLoader('keywords_suggester/data_transformed/dataset/food',metadata_columns=["user","category"],content_column="content")
 docs = loader.load()
 
@@ -35,13 +35,12 @@ def split_list(input_list, chunk_size):
         yield input_list[i:i + chunk_size]
         
 split_docs_chunked = split_list(all_splits, 166)
+"""
 
-#embed_model = HuggingFaceEmbeddings()
+
+split_docs_chunked = InitChromaDocsFromPath('keywords_suggester/data_transformed/dataset/food')
+
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-
-#vectorstore = Chroma.from_documents(documents=all_splits, embedding=embed_model)
-
-
 
 #Populate croma collections
 """

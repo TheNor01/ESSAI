@@ -3,7 +3,6 @@ from pydoc import doc
 from langchain.embeddings import HuggingFaceEmbeddings
 import chromadb
 from langchain.vectorstores import Chroma
-from regex import P
 from modules.LoaderEmbeddings import ProcessChunksFromLocal
 
 from chromadb.config import Settings
@@ -66,6 +65,7 @@ print(langchain_chroma._collection.count())
 print(langchain_chroma._persist_directory)
 langchain_chroma.persist()
 
+print("COLLECTION PERSISTED")
 
 
 

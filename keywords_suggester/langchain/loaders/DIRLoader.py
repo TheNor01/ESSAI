@@ -15,9 +15,9 @@ class DIRLoader:
             for file in files:
                 file_path = os.path.join(root, file)
                 if file_path.endswith('.csv'):
-                    loader = CSVLoader(file_path, **self.kwargs)
+                    loader = CSVLoader(file_path, encoding='utf-8',**self.kwargs)
                 elif file_path.endswith('.txt'):
-                    loader = TextLoader(file_path, **self.kwargs)
+                    loader = TextLoader(file_path, encoding='utf-8',**self.kwargs)
                 else:
                     print(f"Do not process the file: {file_path}")
                     continue
