@@ -34,7 +34,7 @@ def InitChromaDocsFromPath(path):
 
 
 def ProcessChunksFromLocal(path):
-    loader = DIRLoader(path,metadata_columns=["user","category"],content_column="content")
+    loader = DIRLoader(path,metadata_columns=["user","category","created_at"],content_column="content")
     docs = loader.load()
 
     #print(docs[0])

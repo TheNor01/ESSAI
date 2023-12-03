@@ -14,6 +14,11 @@ from langchain.vectorstores import Chroma
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.storage import InMemoryStore
+from langchain.retrievers import TimeWeightedVectorStoreRetriever
+import chromadb
+from datetime import datetime, timedelta
+from langchain.schema import Document
+from chromadb.config import Settings
 
 
 loader = DIRLoader('keywords_suggester/data_transformed/dataset/',metadata_columns=["user","category"],content_column="content")
@@ -23,7 +28,51 @@ docs = loader.load()
 persist_directory = "keywords_suggester/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
+#vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
+
+
+#https://python.langchain.com/docs/modules/data_connection/retrievers/time_weighted_vectorstore
+
+persist_directory = "keywords_suggester/index_storage_lang"
+embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+
+CHROMA_SETTINGS = Settings(
+        persist_directory="keywords_suggester/index_storage_lang"
+)
+
+#vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
+
+persistent_client = chromadb.PersistentClient(
+    path=persist_directory,
+    settings=CHROMA_SETTINGS
+)
+
+print(persistent_client.get_settings())
+
+
+langchain_chroma = Chroma(
+    client=persistent_client,
+    collection_name="langchain",
+    persist_directory = persist_directory,
+    #client_settings=CHROMA_SETTINGS,
+    embedding_function=embed_model,
+)
+
+retriever = TimeWeightedVectorStoreRetriever(vectorstore=langchain_chroma, decay_rate=.000001, k=1)
+
+yesterday = datetime.now() - timedelta(days=1)
+
+retriever.add_documents([Document(page_content="hello world", metadata={"last_accessed_at": yesterday})])
+exit()
+
+
+retriever.add_documents([Document(page_content="hello foo")])
+
+
+print(retriever.get_relevant_documents("hello world"))
+
+
+
 
 #1 type of retriver, VectorStores
 #similarity, mmr, similarity treshold
