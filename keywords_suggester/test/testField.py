@@ -1,5 +1,5 @@
 
-from modules.ChromaSingle import ChromaClass
+from bin.modules.ChromaSingle import ChromaClass
 from langchain.embeddings import HuggingFaceEmbeddings
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")

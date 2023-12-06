@@ -2,7 +2,7 @@ import imp
 from tkinter import NO
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.modules.LoaderEmbeddings import InitChromaDocsFromPath
+from modules.LoaderEmbeddings import InitChromaDocsFromPath
 
 import chromadb
 
