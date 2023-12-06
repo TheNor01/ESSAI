@@ -166,3 +166,6 @@ cython_debug/
 *.csv
 keywords_suggester/data/*
 keywords_suggester/data_transformed/*
+
+
+*.txt

@@ -34,6 +34,7 @@ langchain_chroma = Chroma(
     embedding_function=embed_model,
 )
 
+
 print(langchain_chroma._persist_directory)
 
 docs = langchain_chroma.get(where={"user": "d80b7"},limit=1)

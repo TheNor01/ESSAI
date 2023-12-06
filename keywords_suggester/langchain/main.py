@@ -1,8 +1,5 @@
 import imp
 from tkinter import NO
-from loaders.DIRLoader import DIRLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.retrievers import TFIDFRetriever
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.modules.LoaderEmbeddings import InitChromaDocsFromPath
@@ -10,7 +7,7 @@ from langchain.modules.LoaderEmbeddings import InitChromaDocsFromPath
 import chromadb
 
 
-
+#SingleTon Chroma cross interface
 
 """
 loader = DIRLoader('keywords_suggester/data_transformed/dataset/food',metadata_columns=["user","category"],content_column="content")
@@ -46,7 +43,6 @@ embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-
 """
 
 https://python.langchain.com/docs/modules/data_connection/retrievers/parent_document_retriever#retrieving-full-documents
-
 
 
 
