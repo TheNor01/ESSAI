@@ -9,11 +9,9 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.retrievers import TFIDFRetriever
 from langchain.document_loaders import DirectoryLoader
+from keywords_suggester.config import settings
 
-
-persist_directory = "keywords_suggester/index_storage_lang"
-
-embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+from keywords_suggester.bin.classi.ChromaSingle import ChromaClass
 
 """
 
@@ -26,7 +24,6 @@ result = retrieverTF.get_relevant_documents("tesla")
 print(len(result))
 """
 
-vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
 
 """
 persistent_client = chromadb.PersistentClient(path=persist_directory)
@@ -37,7 +34,6 @@ langchain_chroma = Chroma(
     embedding_function=embed_model,
 )
 print("There are", langchain_chroma._collection.count(), "in the collection")
-"""
 
 
 #https://python.langchain.com/docs/integrations/retrievers/
@@ -62,14 +58,13 @@ for doc in docs:
 
 
 #test adding collection
-"""
 vectordb.add_documents(
     embeddings=[1.5, 2.9, 3.4],
     metadatas={"user": "test", "category": "testCat"},
     documents="doc1000101",
     ids="uri9",
 )
-"""
+
 #whereDoc = chromadb.WhereDocument
 
 
@@ -79,12 +74,11 @@ docs = vectordb.get(where={"user": "d80b7"},limit=5,where_document={"$contains":
 print(docs["ids"])
 print(docs["metadatas"])
 
-exit()
+
 model_url = "https://huggingface.co/TheBloke/Llama-2-7B-chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf"
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
 
-"""
 
 
 template = 
@@ -94,7 +88,6 @@ You are a helpful, respectful and honest assistant. Always answer as helpfully a
 {prompt}[/INST]
 
 prompt = PromptTemplate(template=template, input_variables=["prompt"])
-"""
 
 
 llm = LlamaCpp(
@@ -117,3 +110,15 @@ result = qa({"query": query})
 
 print(result["result"])
 print(result["source_documents"])
+"""
+
+if __name__ == '__main__':
+
+    settings.init()
+    persist_directory = settings.persist_directory+"init_dataset_small"
+
+    embed_model = settings.embed_model
+
+    ChromaDB = ChromaClass(persist_directory,embed_model)
+
+    print("There are", ChromaDB.CLIENT._collection.count(), "in the collection")

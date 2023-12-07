@@ -5,6 +5,10 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer # or LancasterStemmer, RegexpStemmer, SnowballStemmer
 
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+
 default_stemmer = PorterStemmer()
 default_stopwords = stopwords.words('english') # or any other list of your choice
 

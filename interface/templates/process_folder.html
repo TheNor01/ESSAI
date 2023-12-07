@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crea ChromaDB</title>
+</head>
+<body>
+    <h1>Crea ChromaDB dalla cartella selezionata</h1>
+
+    <form action="/create_chromadb" method="post">
+        <!-- Aggiungi i campi del form necessari per creare ChromaDB -->
+        <input type="submit" value="Crea ChromaDB">
+    </form>
+
+    <h1>Folder picker</h1>
+
+    <form action="/process_folder" method="post" enctype="multipart/form-data">
+        <label for="folderPicker">Seleziona una cartella:</label>
+        <input type="file" id="folderPicker" name="folder" webkitdirectory directory multiple>
+        <br>
+        <input type="submit" value="Elabora Cartella">
+    </form>
+
+    <script>
+        document.getElementById('folderPicker').addEventListener('change', function(e) {
+            // Esegui azioni aggiuntive al cambio della selezione
+            console.log('Cartelle selezionate:', this.files);
+        });
+    </script>
+
+
+</body>
+</html>

@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request
 import pandas as pd
+from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+from langchain.embeddings import HuggingFaceEmbeddings
 
 
-app = Flask(__name__)
+
+app = Flask(__name__,template_folder='D:/ALDO/Studio/Uni/ESSAI/interface/templates')
 
 @app.route('/')
 def index():
@@ -32,7 +35,13 @@ def create_chromadb():
     if request.method == 'POST':
         # Ottieni i dati dal modulo del form
         # Esegui le azioni necessarie per creare un oggetto ChromaDB
-        return "ChromaDB creato con successo"
+
+        embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+        persist_directory = "keywords_suggester/index_storage_lang"
+
+        ChromaDB = ChromaClass(persist_directory,embed_model)
+
+        return "ChromaDB creato con successo a" + ChromaDB.persist_directory
 
     return render_template('create_chromadb.html')
 

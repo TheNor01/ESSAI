@@ -3,7 +3,7 @@ from pydoc import doc
 from langchain.embeddings import HuggingFaceEmbeddings
 import chromadb
 from langchain.vectorstores import Chroma
-from modules.LoaderEmbeddings import ProcessChunksFromLocal
+from keywords_suggester.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
 
 from chromadb.config import Settings
 

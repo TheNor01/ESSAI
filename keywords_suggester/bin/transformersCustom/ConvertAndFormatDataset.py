@@ -2,13 +2,12 @@ import os
 import csv
 import uuid
 from datetime import datetime
-from modules.Cleaner import clean_text
+from keywords_suggester.bin.modules.Cleaner import clean_text
 
 # Funzione per convertire un file di testo in un file CSV
 def convert_to_csv(input_file_path, output_file_path,headers):
 
-
-    with open(input_file_path, 'r') as infile, open(output_file_path, 'w', newline='\n') as outfile:
+    with open(input_file_path, 'r',encoding="utf-8") as infile, open(output_file_path, 'w', newline='\n',encoding="utf-8") as outfile:
         lines = infile.readlines()
         content = ('\t'.join([line.strip() for line in lines])).replace('|','')
 
@@ -19,7 +18,7 @@ def convert_to_csv(input_file_path, output_file_path,headers):
         csv_writer.writerow(headers)
         folder_metadata = input_file_path.split('/')[-2]
 
-        created_at_string = datetime.datetime.now().strftime("%Y-%m-%d")
+        created_at_string = datetime.now().strftime("%Y-%m-%d")
 
         #truncate text to limit 
 
@@ -27,15 +26,11 @@ def convert_to_csv(input_file_path, output_file_path,headers):
         data = [content.strip(),user,folder_metadata,created_at_string] #created at in order to delete FROM DB, cleaning action with delete
         csv_writer.writerow(data)
 
-
-        #print(reader)
-        #exit()
-
-        #for line in reader:
-        #    csv_writer.writerow([line.strip()])
-
 # Funzione per elaborare ricorsivamente una directory
 def process_directory(source_dir, destination_dir,headers):
+
+    print("PROCESSING dataset :"+ source_dir)
+
     for root, _, files in os.walk(source_dir):
         for file_name in files:
             # Crea la struttura della cartella di destinazione se non esiste
@@ -49,15 +44,4 @@ def process_directory(source_dir, destination_dir,headers):
             # Converte il file di testo in un file CSV
             convert_to_csv(source_file_path, dest_file_path,headers)
 
-# Directory sorgente e di destinazione
-#source_directory = "keywords_suggester/data/dataset"
-source_directory = "keywords_suggester/data_upload/dataset"
-destination_directory = "keywords_suggester/data_transformed_upload/dataset"
 
-custom_headers = ["content", "user","category","created_at"]
-
-if os.path.isdir(source_directory):
-    # Chiama la funzione per elaborare la directory
-    process_directory(source_directory, destination_directory,custom_headers)
-else:
-    print("DIR DOES NOT EXIST")

@@ -1,7 +1,7 @@
 import os
 
 from langchain.document_loaders import TextLoader
-from loaders.CSVLoader import CSVLoader
+from keywords_suggester.bin.loaders.CSVLoader import CSVLoader
 
 class DIRLoader:
 
