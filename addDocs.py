@@ -4,7 +4,8 @@ from keywords_suggester.bin.modules.LoaderEmbeddings import ProcessChunksFromLoc
 from keywords_suggester.config import settings
 from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 import os
-
+from keywords_suggester.bin.modules.BertSingle import BertTopicClass
+import csv
 #print(langchain_chroma._persist_directory)
 
 """
@@ -89,4 +90,18 @@ if __name__ == '__main__':
     #LOAD A simple csv file user,text or structured --> if not structured bertopic will categorize them.
     
     #PROCESS TO BERTOPIC
+    documents = []
+    with open(os.path.join(settings.upload_directory,SELECTED_UPLOAD)) as file_obj: 
+        reader_obj = csv.reader(file_obj,delimiter="|") 
+        for row in reader_obj: 
+            documents.append(row[1])
+            print(row[1])
+
+    BERT = BertTopicClass(restore=1)
+    topics, probs = BERT.main_model.transform(documents)
+
+    print(topics)
+
+
+    print(BERT.main_model.get_topic_info())
 

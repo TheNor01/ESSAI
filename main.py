@@ -71,3 +71,5 @@ if __name__ == '__main__':
         print("DONE CHROMA PERSIST")
         print(vectordb._collection.name)
         print(vectordb._collection.id)
+
+        
