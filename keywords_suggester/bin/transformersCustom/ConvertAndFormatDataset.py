@@ -16,7 +16,7 @@ def convert_to_csv(input_file_path, output_file_path,headers):
         csv_writer = csv.writer(outfile,escapechar='\\',delimiter='|',quoting=csv.QUOTE_MINIMAL,quotechar='"')
 
         csv_writer.writerow(headers)
-        folder_metadata = input_file_path.split('/')[-2]
+        folder_metadata = input_file_path.split('/')[-2] #TO FIX
 
         created_at_string = datetime.now().strftime("%Y-%m-%d")
 

@@ -1,43 +1,11 @@
 
 from pydoc import doc
-from langchain.embeddings import HuggingFaceEmbeddings
-import chromadb
-from langchain.vectorstores import Chroma
 from keywords_suggester.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
+from keywords_suggester.config import settings
+from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+import os
 
-from chromadb.config import Settings
-
-
-persist_directory = "keywords_suggester/index_storage_lang"
-embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-
-CHROMA_SETTINGS = Settings(
-        persist_directory="keywords_suggester/index_storage_lang"
-)
-
-#vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
-
-
-persistent_client = chromadb.PersistentClient(
-    path=persist_directory,
-    settings=CHROMA_SETTINGS
-)
-
-print(persistent_client.get_settings())
-
-
-langchain_chroma = Chroma(
-    client=persistent_client,
-    collection_name="langchain",
-    persist_directory = persist_directory,
-    #client_settings=CHROMA_SETTINGS,
-    embedding_function=embed_model,
-)
-
-
-print(langchain_chroma._persist_directory)
-
-docs = langchain_chroma.get(where={"user": "d80b7"},limit=1)
+#print(langchain_chroma._persist_directory)
 
 """
 
@@ -49,7 +17,6 @@ https://stackoverflow.com/questions/76482987/chroma-database-embeddings-none-whe
 'start_index': 0, 'user': 'd80b7'}], 
 'documents': ['Video of Crazy-faced cats don’t win the adoption game\tCrazy-faced cats don’t win the adoption']}
 
-"""
 
 
 #collection = persistent_client.get_collection("langchain")
@@ -70,8 +37,6 @@ print("COLLECTION PERSISTED")
 
 
 
-exit()
-
 
 for chunk in chunks[0:1]:
     print(chunk.page_content)
@@ -82,18 +47,12 @@ for chunk in chunks[0:1]:
 
 
 
-    """
     collection.add(
         #embeddings=query_result,
         documents= [chunk.page_content],
         metadatas= [chunk.metadata],
         ids = ["111111"]
     )
-    """
-
-
-
-
 
 
 
@@ -104,3 +63,30 @@ result = collection.get(
 )
 
 print(result)
+"""
+
+
+if __name__ == '__main__':
+
+    settings.init()
+    persist_directory = settings.persist_directory+"init_dataset_small"+"/"
+    embed_model = settings.embed_model
+
+    collection_name_local = "TestCollection"
+    ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
+
+    print("SCANNING UPLOAD DIR.. --> "+settings.upload_directory)
+    files = os.listdir(settings.upload_directory)
+    print(files)
+
+    SELECTED_UPLOAD = "simpleUpload.csv"
+    CHOOSED_FILE = [k for k in files if SELECTED_UPLOAD in k]
+
+    print(CHOOSED_FILE) #csv is without category
+    
+    #csv file content|USER
+    #dir -> category/.csvfile
+    #LOAD A simple csv file user,text or structured --> if not structured bertopic will categorize them.
+    
+    #PROCESS TO BERTOPIC
+

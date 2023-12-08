@@ -34,6 +34,9 @@ if __name__ == "__main__":
     computed_document = collection["documents"]
     computed_embeddings = collection["embeddings"]
 
+    print(ChromaDB.CLIENT._collection.name)
+    print(len(computed_embeddings))
+
     exit()
 
     computed_document_array=np.array([np.array(xi) for xi in computed_embeddings])

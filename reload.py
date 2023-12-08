@@ -115,10 +115,11 @@ print(result["source_documents"])
 if __name__ == '__main__':
 
     settings.init()
-    persist_directory = settings.persist_directory+"init_dataset_small"
-
+    persist_directory = settings.persist_directory+"init_dataset_small"+"/"
     embed_model = settings.embed_model
 
-    ChromaDB = ChromaClass(persist_directory,embed_model)
+    collection_name_local = "TestCollection"
+    ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
     print("There are", ChromaDB.CLIENT._collection.count(), "in the collection")
+    print("Name Collection:", ChromaDB.CLIENT._collection.name)

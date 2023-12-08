@@ -170,3 +170,5 @@ keywords_suggester/data_transformed/*
 
 *.txt
 keywords_suggester/index_storage_lang/chroma.sqlite3
+
+*.sqlite3

@@ -14,14 +14,14 @@ def singleton(cls):
 
 @singleton
 class ChromaClass:
-    def __init__(self,persist_directory,embeding_model):
+    def __init__(self,persist_directory,embeding_model,collection_name):
         self.persist_directory = persist_directory
         self.CHROMA_SETTINGS = Settings(self.persist_directory)
         self.persistent_client = chromadb.PersistentClient(path=self.persist_directory,settings=self.CHROMA_SETTINGS)
 
         self.CLIENT = Chroma(
                         client=self.persistent_client,
-                        collection_name="langchain",
+                        collection_name=collection_name,
                         persist_directory = self.persist_directory,
                         #client_settings=CHROMA_SETTINGS,
                         embedding_function=embeding_model
