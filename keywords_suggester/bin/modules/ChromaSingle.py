@@ -1,5 +1,6 @@
 from chromadb.config import Settings
 import chromadb
+from langchain.schema import Document
 from langchain.vectorstores import Chroma
 import os
 
@@ -37,10 +38,18 @@ class ChromaClass:
         self.__storeUsersFile__(users)
         return users
     
+    def AddDocsToCollection(self,documents):
+        self.persistent_client.heartbeat()
+        ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
+        print("TOTAL IDS ADDED: -> "+str(len(ids_added)))
+        
+        print("TOTAL COLLECTION: -->"+ str(self.CLIENT._collection.count()))
+        pass
+    
     def __storeUsersFile__ (self,users): #da spostare magari su INIT
 
         tmp_dir=self.storagePath + self.CLIENT._collection.name
-        if(os.path.isdir(self.storagePath)):
+        if(not os.path.exists(tmp_dir)):
             os.makedirs(tmp_dir)
             print("CREATED USER DIR:"+tmp_dir)
         

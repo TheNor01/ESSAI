@@ -1,4 +1,5 @@
 
+from datetime import datetime
 from pydoc import doc
 from keywords_suggester.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
 from keywords_suggester.config import settings
@@ -6,9 +7,18 @@ from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 import os
 from keywords_suggester.bin.modules.BertSingle import BertTopicClass
 import csv
+from langchain.schema import Document
+import hashlib
+import pandas as pd
+import numpy as np
 #print(langchain_chroma._persist_directory)
 
 """
+
+#https://medium.com/data-reply-it-datatech/bertopic-topic-modeling-as-you-have-never-seen-it-before-abb48bbab2b2
+#https://maartengr.github.io/BERTopic/getting_started/topicrepresentation/topicrepresentation.html#optimize-labels
+
+
 
 https://stackoverflow.com/questions/76482987/chroma-database-embeddings-none-when-using-get
 
@@ -90,18 +100,63 @@ if __name__ == '__main__':
     #LOAD A simple csv file user,text or structured --> if not structured bertopic will categorize them.
     
     #PROCESS TO BERTOPIC
-    documents = []
+    BERT = BertTopicClass(restore=1)
+    topic_info = BERT.main_model.get_topic_info()
+    
+    dict_topic_name = dict(zip(topic_info['Topic'], topic_info['Name']))
+    
+    documents_list,topics_list,users_list,ids_list = [],[],[],[]
+    CREATED_TIME_NOW =  datetime.now().strftime("%Y-%m-%d")
+    
+    
+    
     with open(os.path.join(settings.upload_directory,SELECTED_UPLOAD)) as file_obj: 
         reader_obj = csv.reader(file_obj,delimiter="|") 
+        next(reader_obj, None) # SKIP HEADERS
         for row in reader_obj: 
-            documents.append(row[1])
-            print(row[1])
+            local_doc = row[1]
+            ids_list.append(hashlib.md5(local_doc.encode()))
+            documents_list.append(local_doc)
+            users_list.append(row[0])
+            print(local_doc)
+            
+            topics, probs = BERT.main_model.transform(local_doc)
+            print(topics) #topics di zero dovrebbe essere il massimo
+            print(probs)
+            #index = np.argmax(probs)
+            max_topic = topics[0]
+            
+            #print(probs.shape)
+            #print(probs)
+            #topic_mapped = [dict_topic_name[key] for key in topics]
+            topic_mapped = dict_topic_name[max_topic] 
+            #print(topic_mapped)
+            topics_list.append(topic_mapped)
 
-    BERT = BertTopicClass(restore=1)
-    topics, probs = BERT.main_model.transform(documents)
+    upload_df = pd.DataFrame(zip(documents_list, topics_list, users_list,ids_list),columns=['content','category', 'user','ids'])
+    upload_df['created_at']=CREATED_TIME_NOW
+    #create column metadata as dict
+    
+    print(upload_df)
+    #["user","category","created_at"]
+    metadata_df = upload_df[["user","category","created_at"]]
+    
+    metadata_dict = metadata_df.to_dict(orient='records')
+    
+    print(metadata_dict)
 
-    print(topics)
-
-
-    print(BERT.main_model.get_topic_info())
+    #LOAD FULL DF OR SPLIT BY CHUNK AND FOLLOW STANDARD FLOW? how handle multiple ids same text (chunks)
+    
+    DOCS_TO_UPLOAD =  [Document(page_content=d,metadata=m) for d,m in zip(documents_list, metadata_dict)]
+    
+    print(DOCS_TO_UPLOAD)
+    print("UPLOADING... "+str(len(DOCS_TO_UPLOAD)))
+    
+    ChromaDB.AddDocsToCollection(DOCS_TO_UPLOAD)
+    
+  
+    #BERT.main_model.visualize_topics().show()
+    #BERT.main_model.visualize_barchart(top_n_topics=10).show()
+    
+    #i have to upload them into CHROMADB
 

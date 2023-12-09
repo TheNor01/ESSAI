@@ -15,7 +15,8 @@ if __name__ == '__main__':
     collection_name_local = "TestCollection"
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
-    #users_collection = ChromaDB.GetListOfUsers()
+
+    users_collection = ChromaDB.GetListOfUsers()
 
     docs = ChromaDB.CLIENT.get(where={"user": "52254"},limit=5,include=["metadatas","documents"])
     metadata = docs["metadatas"]

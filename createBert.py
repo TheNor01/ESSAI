@@ -1,15 +1,10 @@
 
-from bertopic import BERTopic
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
-from bertopic.vectorizers import ClassTfidfTransformer
 import numpy as np
 from sklearn.datasets import fetch_20newsgroups
-from datasets import load_dataset
+#from datasets import load_dataset
 from keywords_suggester.config import settings
 
-from umap import UMAP
-from hdbscan import HDBSCAN
+
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
@@ -18,7 +13,7 @@ from keywords_suggester.config import settings
 
 if __name__ == "__main__":
 
-    SAVE=0
+    SAVE=1
 
     settings.init()
     persist_directory = settings.persist_directory+"init_dataset_small"+"/"

@@ -1,8 +1,6 @@
 #TODO
 
 
-
-
 1) Caching system: Embeddings can be stored or temporarily cached to avoid needing to recompute them.
 
 2) Load a test of documents into collection
@@ -22,3 +20,4 @@
 
 3) User collection con filtri?
 
+4) https://maartengr.github.io/BERTopic/getting_started/topicrepresentation/topicrepresentation.html#optimize-labels
