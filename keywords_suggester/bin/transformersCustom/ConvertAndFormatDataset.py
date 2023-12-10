@@ -3,6 +3,59 @@ import csv
 import uuid
 from datetime import datetime
 from keywords_suggester.bin.modules.Cleaner import clean_text
+from keywords_suggester.config import settings
+import hashlib
+import pandas as pd
+
+def build_dataframe_from_csv_uploaded(BERT_MODEL,SELECTED_UPLOAD):
+
+    topic_info = BERT_MODEL.main_model.get_topic_info()
+    
+    dict_topic_name = dict(zip(topic_info['Topic'], topic_info['Name']))
+
+    documents_list,topics_list,users_list,ids_list = [],[],[],[]
+    CREATED_TIME_NOW =  datetime.now().strftime("%Y-%m-%d")
+
+
+    USE_BERT = 1
+    with open(os.path.join(settings.upload_directory,SELECTED_UPLOAD),encoding="utf-8") as file_obj: 
+        reader_obj = csv.reader(file_obj,delimiter="|") 
+
+        #next(reader_obj, None) # SKIP HEADERS
+        for count,row in enumerate(reader_obj): 
+            
+            #CHECK HEADER
+            if(count==0): #FIRST ITER CHECK
+                if not "CATEGORY".lower() in (item.lower() for item in row):
+                    print("CATEGORY NOT DETECTED -> Using bertopic")
+                else:
+                    USE_BERT = 0
+                    print("CATEGORY DETECTED")
+                continue #next(reader_obj, None) # SKIP HEADERS
+            
+            local_doc = row[1]
+            ids_list.append(hashlib.md5(local_doc.encode()).hexdigest()) #in realtà crea lui ID, posso togliere
+            documents_list.append(local_doc)
+            users_list.append(row[0])
+            if(USE_BERT==1):
+                topics, probs = BERT_MODEL.main_model.transform(local_doc) #Non necessario se è presente la colonna category
+                max_topic = topics[0]
+                topic_mapped = dict_topic_name[max_topic] 
+                topics_list.append(topic_mapped)
+            else:
+                #Assume Category is 3rd column mapped
+                local_category = row[2]
+                topics_list.append(local_category)
+
+    upload_df = pd.DataFrame(zip(documents_list, topics_list, users_list,ids_list),columns=['content','category', 'user','ids'])
+    upload_df['created_at']=CREATED_TIME_NOW
+
+    #TODO we can store DF into storage "name+processingDate"
+
+    return upload_df
+
+
+
 
 # Funzione per convertire un file di testo in un file CSV
 def convert_to_csv(input_file_path, output_file_path,headers):

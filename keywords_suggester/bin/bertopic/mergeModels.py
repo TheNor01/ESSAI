@@ -26,18 +26,25 @@ if __name__ == "__main__":
 
 
     dataset = load_dataset("CShorten/ML-ArXiv-Papers")["train"]
-    abstracts_1 = dataset["abstract"][:2_000]
+    abstracts_1 = dataset["abstract"][:1_500] #according min topic size == K hdbscan
+
+    print(len(abstracts_1))
+    print(type(abstracts_1))
+
 
    
     umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
 
     topic_model_1 = BERTopic(umap_model=umap_model, embedding_model=embeded_model,min_topic_size=20).fit(abstracts_1)
+
     merged_model = BERTopic.merge_models([main_model, topic_model_1], min_similarity=0.6) #Increasing this value will increase the change of adding new topics
 
     print(len(main_model.get_topic_info()))
     print(len(merged_model.get_topic_info()))
 
     print(merged_model.get_topic_info().tail(5))
+
+    exit()
 
     #da lanciare settimana in settimana
 

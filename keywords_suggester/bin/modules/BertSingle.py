@@ -8,7 +8,8 @@ from bertopic.vectorizers import ClassTfidfTransformer
 from keywords_suggester.config import settings
 from bertopic import BERTopic
 from sentence_transformers import SentenceTransformer
-
+from datasets import load_dataset
+import traceback
 
 def singleton(cls):
     instances = {}
@@ -26,20 +27,23 @@ class BertTopicClass:
 
         self.storageModel = "keywords_suggester/models_checkpoint/bert"
         self.embeded_model = SentenceTransformer('all-mpnet-base-v2')
-        
+
+
+
+        self.hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
+        self.vectorizer_model = CountVectorizer(stop_words="english", min_df=2,ngram_range=(1, 2)) # min_df changed to 1
+        self.ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
+        self.umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
+
+        #min samples 15  #min_cluster_size
+
         if(restore==0):
-            hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
-            vectorizer_model = CountVectorizer(stop_words="english",min_df=2, ngram_range=(1, 2))
-            ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
-            umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
-
-
             self.main_model = BERTopic(
-                umap_model=umap_model,
-                hdbscan_model=hdbscan_model,
+                umap_model=self.umap_model,
+                hdbscan_model=self.hdbscan_model,
                 embedding_model=self.embeded_model,
-                vectorizer_model=vectorizer_model,
-                ctfidf_model=ctfidf_model,
+                vectorizer_model=self.vectorizer_model,
+                ctfidf_model=self.ctfidf_model,
                 top_n_words=5,
                 language='english',
                 calculate_probabilities=True,
@@ -52,4 +56,54 @@ class BertTopicClass:
         self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
         
 
+    def PreviewMerge(self,text : list[str],min_similarity_topics):
+        
+        #topic_info = self.main_model.get_topic_info()
+
+        #print(topic_info)
+
+        #dataset = load_dataset("CShorten/ML-ArXiv-Papers")["train"]
+        #abstracts_1 = dataset["abstract"][:100] #according min topic size == K hdbscan
+
+
+
+        #IDEA slide parameters in order to preview different result
+
+        local_hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
+        local_vectorizer_model = CountVectorizer(stop_words="english",ngram_range=(1, 2)) # min_df changed to 1
+        local_ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
+        local_umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
+
+        try:
+            topic_model_1 = BERTopic(
+                umap_model=local_umap_model,
+                hdbscan_model=local_hdbscan_model,
+                embedding_model=self.embeded_model,
+                vectorizer_model=local_vectorizer_model,
+                ctfidf_model=local_ctfidf_model,
+                top_n_words=5,
+                language='english',
+                calculate_probabilities=True,
+                verbose=True).fit(text)
+            
+
+            merged_model = BERTopic.merge_models([self.main_model, topic_model_1], min_similarity=min_similarity_topics) #Increasing this value will increase the change of adding new topics
+
+            sizeTopicMain = len(self.main_model.get_topic_info())
+            sizeTopicNew = len(merged_model.get_topic_info())
+
+
+            print(sizeTopicMain)
+            print(sizeTopicNew)
+
+            discoveredTopics = sizeTopicNew-sizeTopicMain
+
+            print("NEW TOPICS DISCOVERED --> Do you like them")
+            print(merged_model.get_topic_info().tail(discoveredTopics))
+        except ValueError:
+            traceback.print_exc() 
+            print("ERROR OCCURED , try change your max_df, min_df value")
+        except IndexError:
+            traceback.print_exc() 
+            print("ERROR OCCURED , increase number samples")
 

@@ -11,6 +11,7 @@ from langchain.schema import Document
 import hashlib
 import pandas as pd
 import numpy as np
+from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import build_dataframe_from_csv_uploaded,clean_text
 #print(langchain_chroma._persist_directory)
 
 """
@@ -90,8 +91,9 @@ if __name__ == '__main__':
     files = os.listdir(settings.upload_directory)
     print(files)
 
-    SELECTED_UPLOAD = "simpleUpload.csv"
-    CHOOSED_FILE = [k for k in files if SELECTED_UPLOAD in k]
+    #SELECTED_UPLOAD = "simpleUpload.csv" #no category
+    SELECTED_UPLOAD = "simpleUpload.csv" #no category
+    CHOOSED_FILE = [k for k in files if SELECTED_UPLOAD in k][0]
 
     print(CHOOSED_FILE) #csv is without category
     
@@ -101,6 +103,30 @@ if __name__ == '__main__':
     
     #PROCESS TO BERTOPIC
     BERT = BertTopicClass(restore=1)
+
+
+
+    #TODO possiamo fare la preview con BERTOPIC prima di aggiungere effettivamente gli utenti alla collezione CHROMA
+
+    #devo spostare la lettura qui dei documenti
+
+    df = pd.read_csv(os.path.join(settings.upload_directory,SELECTED_UPLOAD),delimiter="|")
+    #df = df.drop('CATEGORY', axis=1)
+
+    texts = df['CONTENT'].tolist() #dovrebbero esserci un numero di sample pari a K hdbscan --> Edit. servono molti sample
+    clean_texts = list(map(clean_text, texts))
+    print("CSV UPLOAD LENGHT: ->"+str(len(clean_texts)))
+    min_similarity_topics = 1.5
+    BERT.PreviewMerge(clean_texts,min_similarity_topics) #if category is not present
+
+    exit()
+    #print(result) 
+
+    upload_df = build_dataframe_from_csv_uploaded(BERT,CHOOSED_FILE)
+    print(upload_df)
+
+    exit()
+    """
     topic_info = BERT.main_model.get_topic_info()
     
     dict_topic_name = dict(zip(topic_info['Topic'], topic_info['Name']))
@@ -130,33 +156,31 @@ if __name__ == '__main__':
             #print(probs)
             #topic_mapped = [dict_topic_name[key] for key in topics]
             topic_mapped = dict_topic_name[max_topic] 
-            #print(topic_mapped)
             topics_list.append(topic_mapped)
 
     upload_df = pd.DataFrame(zip(documents_list, topics_list, users_list,ids_list),columns=['content','category', 'user','ids'])
     upload_df['created_at']=CREATED_TIME_NOW
     #create column metadata as dict
+    """
     
-    print(upload_df)
-    #["user","category","created_at"]
-    metadata_df = upload_df[["user","category","created_at"]]
-    
-    metadata_dict = metadata_df.to_dict(orient='records')
-    
-    print(metadata_dict)
 
+    metadata_df = upload_df[["user","category","created_at"]]
+    metadata_dict = metadata_df.to_dict(orient='records')
+    #print(metadata_dict)
+
+    documents_list = upload_df["content"].to_list()
+    #print(documents_list)
     #LOAD FULL DF OR SPLIT BY CHUNK AND FOLLOW STANDARD FLOW? how handle multiple ids same text (chunks)
     
     DOCS_TO_UPLOAD =  [Document(page_content=d,metadata=m) for d,m in zip(documents_list, metadata_dict)]
     
-    print(DOCS_TO_UPLOAD)
+    #print(DOCS_TO_UPLOAD)
     print("UPLOADING... "+str(len(DOCS_TO_UPLOAD)))
     
-    ChromaDB.AddDocsToCollection(DOCS_TO_UPLOAD)
-    
-  
-    #BERT.main_model.visualize_topics().show()
-    #BERT.main_model.visualize_barchart(top_n_topics=10).show()
-    
     #i have to upload them into CHROMADB
+    #ChromaDB.AddDocsToCollection(DOCS_TO_UPLOAD)
+    
+
+    
+
 
