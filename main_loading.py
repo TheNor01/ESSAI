@@ -7,7 +7,7 @@ import chromadb
 from datetime import datetime
 from keywords_suggester.config import settings
 
-
+from langchain.indexes import SQLRecordManager, index
 from chromadb.config import Settings
 #SingleTon Chroma cross interface
 
@@ -64,6 +64,9 @@ if __name__ == '__main__':
                 collection_name = collection_name_local,
                 persist_directory=settings.persist_directory+basenameDataset+"/" #settings
             )
+
+            
+            
         vectordb.persist()  
         collection = vectordb.get()
 
@@ -71,5 +74,6 @@ if __name__ == '__main__':
         print("DONE CHROMA PERSIST")
         print(vectordb._collection.name)
         print(vectordb._collection.id)
+
 
         

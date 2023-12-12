@@ -40,6 +40,10 @@ class ChromaClass:
     
     def AddDocsToCollection(self,documents):
         self.persistent_client.heartbeat()
+
+        #INSER HERE INDEXER
+        #INSER HERE INDEXER
+
         ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
         print("TOTAL IDS ADDED: -> "+str(len(ids_added)))
         

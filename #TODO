@@ -1,23 +1,14 @@
 #TODO
 
 
-1) Caching system: Embeddings can be stored or temporarily cached to avoid needing to recompute them.
 
-2) Load a test of documents into collection
-
-
-3) Caching logic embedding, croma doesn't have caches
-
-3) Stabilire come compore i retrievial
+1) Stabilire come compore i retrievial
     a ) https://python.langchain.com/docs/modules/data_connection/retrievers/vectorstore
     b ) https://python.langchain.com/docs/modules/data_connection/retrievers/time_weighted_vectorstore
-
-
-4)https://python.langchain.com/docs/modules/data_connection/indexing
-
-    index managnment
+    c
 
 
 3) User collection con filtri?
 
 4) https://maartengr.github.io/BERTopic/getting_started/topicrepresentation/topicrepresentation.html#optimize-labels
+    a) https://maartengr.github.io/BERTopic/getting_started/representation/llm.html#langchain

@@ -10,6 +10,8 @@ from bertopic import BERTopic
 from sentence_transformers import SentenceTransformer
 from datasets import load_dataset
 import traceback
+from transformers import pipeline
+
 
 def singleton(cls):
     instances = {}
@@ -54,19 +56,33 @@ class BertTopicClass:
     
     def PersistModel(self):
         self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
-        
+
+
+    def GenereateTopicLabels(self):
+        topic_labels =  self.main_model.generate_topic_labels(nr_words=3,
+                                                 topic_prefix=False,
+                                                 word_length=10,
+                                                 separator=", ")
+        print(topic_labels)
+
+    def ChangeLabelMeaning(self,dictToChange:dict):
+        #{1: "Space Travel", 7: "Religion"}
+        self.main_model.set_topic_labels(dictToChange)
+        print("SAVING CHANGES..")
+        self.PersistModel()
+
+
+    def SuggestLabels(text,candidate_labels):
+        classifier_EXT = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+        output_labels = classifier_EXT(text, candidate_labels)
+
+        return output_labels
+    
+    #TODO topic over time
 
     def PreviewMerge(self,text : list[str],min_similarity_topics):
         
-        #topic_info = self.main_model.get_topic_info()
-
-        #print(topic_info)
-
-        #dataset = load_dataset("CShorten/ML-ArXiv-Papers")["train"]
-        #abstracts_1 = dataset["abstract"][:100] #according min topic size == K hdbscan
-
-
-
+    
         #IDEA slide parameters in order to preview different result
 
         local_hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)

@@ -11,7 +11,7 @@ from langchain.retrievers import TFIDFRetriever
 from langchain.document_loaders import DirectoryLoader
 from keywords_suggester.config import settings
 
-from keywords_suggester.bin.classi.ChromaSingle import ChromaClass
+from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 
 """
 
@@ -121,5 +121,6 @@ if __name__ == '__main__':
     collection_name_local = "TestCollection"
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
+
     print("There are", ChromaDB.CLIENT._collection.count(), "in the collection")
-    print("Name Collection:", ChromaDB.CLIENT._collection.name)
+    print("Name Collection:", ChromaDB.CLIENT._collection)

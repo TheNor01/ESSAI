@@ -18,7 +18,11 @@ if __name__ == '__main__':
 
     users_collection = ChromaDB.GetListOfUsers()
 
-    docs = ChromaDB.CLIENT.get(where={"user": "52254"},limit=5,include=["metadatas","documents"])
+    docs = ChromaDB.CLIENT.get(where={"user": "9630e"},limit=5,include=["metadatas","documents"])
+    if(len(docs)==0):
+        print("NO DOCS")
+        exit()
+    
     metadata = docs["metadatas"]
     content = docs["documents"]
     for(meta, cont) in zip(metadata, content):

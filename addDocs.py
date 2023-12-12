@@ -18,63 +18,8 @@ from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import bu
 
 #https://medium.com/data-reply-it-datatech/bertopic-topic-modeling-as-you-have-never-seen-it-before-abb48bbab2b2
 #https://maartengr.github.io/BERTopic/getting_started/topicrepresentation/topicrepresentation.html#optimize-labels
+#https://maartengr.github.io/BERTopic/getting_started/zeroshot/zeroshot.html#example
 
-
-
-https://stackoverflow.com/questions/76482987/chroma-database-embeddings-none-when-using-get
-
-{'ids': ['46c66dae-594c-11ee-92b8-0a925a2cd92a'], 
-'embeddings': None, 
-'metadatas': [{'category': 'sciences', 'row': 0, 'source': 'keywords_suggester/data_transformed/dataset/sciences/18.csv', 
-'start_index': 0, 'user': 'd80b7'}], 
-'documents': ['Video of Crazy-faced cats don’t win the adoption game\tCrazy-faced cats don’t win the adoption']}
-
-
-
-#collection = persistent_client.get_collection("langchain")
-collection = langchain_chroma._collection
-print(collection.count())
-
-
-chunks = ProcessChunksFromLocal("keywords_suggester/data_transformed_upload/dataset/dummy")
-
-langchain_chroma.add_documents(documents=chunks)
-print(langchain_chroma._collection.count())
-
-
-print(langchain_chroma._persist_directory)
-langchain_chroma.persist()
-
-print("COLLECTION PERSISTED")
-
-
-
-
-for chunk in chunks[0:1]:
-    print(chunk.page_content)
-    query_result = embed_model.embed_query(chunk.page_content)
-    print(query_result[0:3])
-    print(len(query_result))
-
-
-
-
-    collection.add(
-        #embeddings=query_result,
-        documents= [chunk.page_content],
-        metadatas= [chunk.metadata],
-        ids = ["111111"]
-    )
-
-
-
-print("There are", langchain_chroma._collection.count(), "in the collection")
-
-result = collection.get(
-    ids=["111111"],
-)
-
-print(result)
 """
 
 
@@ -108,7 +53,6 @@ if __name__ == '__main__':
 
     #TODO possiamo fare la preview con BERTOPIC prima di aggiungere effettivamente gli utenti alla collezione CHROMA
 
-    #devo spostare la lettura qui dei documenti
 
     df = pd.read_csv(os.path.join(settings.upload_directory,SELECTED_UPLOAD),delimiter="|")
     #df = df.drop('CATEGORY', axis=1)
@@ -119,13 +63,11 @@ if __name__ == '__main__':
     min_similarity_topics = 1.5
     BERT.PreviewMerge(clean_texts,min_similarity_topics) #if category is not present
 
-    exit()
     #print(result) 
 
     upload_df = build_dataframe_from_csv_uploaded(BERT,CHOOSED_FILE)
     print(upload_df)
 
-    exit()
     """
     topic_info = BERT.main_model.get_topic_info()
     
@@ -178,7 +120,7 @@ if __name__ == '__main__':
     print("UPLOADING... "+str(len(DOCS_TO_UPLOAD)))
     
     #i have to upload them into CHROMADB
-    #ChromaDB.AddDocsToCollection(DOCS_TO_UPLOAD)
+    ChromaDB.AddDocsToCollection(DOCS_TO_UPLOAD)
     
 
     
