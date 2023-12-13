@@ -172,3 +172,4 @@ keywords_suggester/data_transformed/*
 keywords_suggester/index_storage_lang/chroma.sqlite3
 
 *.sqlite3
+record_manager_cache.sql

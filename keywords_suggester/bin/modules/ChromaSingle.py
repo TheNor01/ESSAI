@@ -3,6 +3,7 @@ import chromadb
 from langchain.schema import Document
 from langchain.vectorstores import Chroma
 import os
+from keywords_suggester.bin.modules.Indexer import Indexer
 
 def singleton(cls):
     instances = {}
@@ -21,8 +22,6 @@ class ChromaClass:
         self.persist_directory = persist_directory
         self.CHROMA_SETTINGS = Settings(self.persist_directory)
         self.persistent_client = chromadb.PersistentClient(path=self.persist_directory,settings=self.CHROMA_SETTINGS)
-
-
         self.CLIENT = Chroma(
                         client=self.persistent_client,
                         collection_name=collection_name,
@@ -30,6 +29,9 @@ class ChromaClass:
                         #client_settings=CHROMA_SETTINGS,
                         embedding_function=embeding_model
         )
+        
+        self.indexer = Indexer(collection_name,self.CLIENT)
+        
 
     def GetListOfUsers(self):
         collection = self.CLIENT.get()
@@ -38,15 +40,27 @@ class ChromaClass:
         self.__storeUsersFile__(users)
         return users
     
+    def AddSpecialDocs(self,documents):
+        
+        #INSER HERE INDEXER
+        
+        #we load default collection, as a startup phase, then every special document will be tracked
+        #We mark them as mutated documents. As a special info bio for users. We can update them every time
+        
+        info = self.indexer.IndexIncremental(documents)
+        
+        print("TOTAL IDS ADDED: -> "+str((info["num_added"])))
+        print("TOTAL IDS UPDATED: -> "+str((info["num_updated"])))
+        print("TOTAL IDS DELETED: -> "+str((info["num_deleted"])))
+    
     def AddDocsToCollection(self,documents):
         self.persistent_client.heartbeat()
 
-        #INSER HERE INDEXER
-        #INSER HERE INDEXER
-
-        ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
-        print("TOTAL IDS ADDED: -> "+str(len(ids_added)))
+    
+        #ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
+        #print("TOTAL IDS ADDED: -> "+str(len(ids_added)))
         
+    
         print("TOTAL COLLECTION: -->"+ str(self.CLIENT._collection.count()))
         pass
     

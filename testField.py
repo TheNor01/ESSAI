@@ -26,6 +26,9 @@ computed_metadata = collection["metadatas"]
 print(type(computed_metadata))
 
 timestamps = [ x["created_at"] for x in computed_metadata]
-print(timestamps)
+#print(timestamps)
+
+print(len(computed_document))
+print(len(timestamps))
 
 BERT.TopicOverTime(computed_document,timestamps)

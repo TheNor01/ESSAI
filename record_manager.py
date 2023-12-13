@@ -9,7 +9,7 @@ from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 
 def _clear():
     """Hacky helper method to clear content. See the `full` mode section to to understand why it works."""
-    index([], record_manager, ChromaDB, cleanup="full", source_id_key="source")
+    index([], record_manager, ChromaDB.CLIENT, cleanup="full", source_id_key="source")
 
 if __name__ == '__main__':
     collection_name_local = "TestCollection"

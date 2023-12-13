@@ -47,7 +47,7 @@ if __name__ == "__main__":
         #BERT.save("./keywords_suggester/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
     else:
         print("RESTORING MODEL BERT ...")
-        BERT = BertTopicClass(restore=1)
+        BERT = BertTopicClass(BERT_NAME,restore=1)
 
 
     print(BERT.main_model.get_topic_info())

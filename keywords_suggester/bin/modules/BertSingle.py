@@ -82,18 +82,17 @@ class BertTopicClass:
 
         return output_labels
     
-    #TODO topic over time https://maartengr.github.io/BERTopic/getting_started/topicsovertime/topicsovertime.html#example
-
+   
     def TopicOverTime(self,docs,timestamps):
 
         print("LOADING TOPIC OVER TIME...")
 
-        trump = pd.read_csv('https://drive.google.com/uc?export=download&id=1xRKHaP-QwACMydlDnyFPEaFdtskJuBa6')
-        trump.text = trump.apply(lambda row: re.sub(r"http\S+", "", row.text).lower(), 1)
-        trump.text = trump.apply(lambda row: " ".join(filter(lambda x:x[0]!="@", row.text.split())), 1)
-        trump.text = trump.apply(lambda row: " ".join(re.sub("[^a-zA-Z]+", " ", row.text).split()), 1)
-        trump = trump.loc[(trump.isRetweet == "f") & (trump.text != ""), :]
-        timestamps = trump.date.to_list()[0:657]
+        #trump = pd.read_csv('https://drive.google.com/uc?export=download&id=1xRKHaP-QwACMydlDnyFPEaFdtskJuBa6')
+        #trump.text = trump.apply(lambda row: re.sub(r"http\S+", "", row.text).lower(), 1)
+        #trump.text = trump.apply(lambda row: " ".join(filter(lambda x:x[0]!="@", row.text.split())), 1)
+        #trump.text = trump.apply(lambda row: " ".join(re.sub("[^a-zA-Z]+", " ", row.text).split()), 1)
+        #trump = trump.loc[(trump.isRetweet == "f") & (trump.text != ""), :]
+        # timestamps = trump.date.to_list()[0:657]
         # tweets = trump.text.to_list()
 
         #print(len(timestamps))
@@ -101,7 +100,7 @@ class BertTopicClass:
 
         #TODO FIX not same size
 
-        topics_over_time = self.main_model.topics_over_time(docs,timestamps,nr_bins=2,datetime_format=None)
+        topics_over_time = self.main_model.topics_over_time(docs,timestamps,datetime_format=None)
         self.main_model.visualize_topics_over_time(topics_over_time).show()
 
     def PreviewMerge(self,text : list[str],min_similarity_topics):

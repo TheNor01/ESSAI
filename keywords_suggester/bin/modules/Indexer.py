@@ -15,10 +15,12 @@ def singleton(cls):
 
 @singleton
 class Indexer():
-    def __init__(self,collection_name):
+    def __init__(self,collection_name,vectorstore):
         index_name_local = collection_name + "_index"
         namespace = f"chromadb/{index_name_local}"
         print("CREATED INDEX NAMESPACE -> "+namespace)
+        
+        self.vectorstore = vectorstore
 
         self.record_manager = SQLRecordManager(
             namespace, db_url="sqlite:///record_manager_cache.sql"
@@ -26,5 +28,10 @@ class Indexer():
 
         self.record_manager.create_schema()
 
-    def Index(self,docs,vectorstore):
-        index(docs, self.record_manager, vectorstore, cleanup="incremental", source_id_key="source")
+    def IndexIncremental(self,docs):
+        info = index(docs, self.record_manager, self.vectorstore, cleanup="incremental", source_id_key="source")
+        return info
+    
+    
+    def Index(self,docs):
+        index(docs, self.record_manager, self.vectorstore, cleanup=None, source_id_key="source")

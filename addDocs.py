@@ -47,7 +47,8 @@ if __name__ == '__main__':
     #LOAD A simple csv file user,text or structured --> if not structured bertopic will categorize them.
     
     #PROCESS TO BERTOPIC
-    BERT = BertTopicClass(restore=1)
+    BERT_NAME = "test1"
+    BERT = BertTopicClass(BERT_NAME,restore=1)
 
 
 
@@ -61,9 +62,11 @@ if __name__ == '__main__':
     clean_texts = list(map(clean_text, texts))
     print("CSV UPLOAD LENGHT: ->"+str(len(clean_texts)))
     min_similarity_topics = 1.5
-    BERT.PreviewMerge(clean_texts,min_similarity_topics) #if category is not present
+    
+    
+    #PREVIEW
+    #BERT.PreviewMerge(clean_texts,min_similarity_topics) #if category is not present
 
-    #print(result) 
 
     upload_df = build_dataframe_from_csv_uploaded(BERT,CHOOSED_FILE)
     print(upload_df)
