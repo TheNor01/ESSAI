@@ -1,6 +1,8 @@
 from chromadb.config import Settings
 import chromadb
 import os
+import re
+import pandas as pd
 from umap import UMAP
 from hdbscan import HDBSCAN
 from sklearn.feature_extraction.text import CountVectorizer
@@ -25,9 +27,9 @@ def singleton(cls):
 
 @singleton
 class BertTopicClass:
-    def __init__(self,restore=0):
+    def __init__(self,BERT_NAME,restore=0):
 
-        self.storageModel = "keywords_suggester/models_checkpoint/bert"
+        self.storageModel = "keywords_suggester/models_checkpoint/bert"+"/"+BERT_NAME
         self.embeded_model = SentenceTransformer('all-mpnet-base-v2')
 
 
@@ -52,9 +54,11 @@ class BertTopicClass:
                 verbose=True
             )
         else:
+            print("LOADING MODEL FROM "+self.storageModel)
             self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embeded_model)
     
     def PersistModel(self):
+        print("SAVING BERT INTO "+self.storageModel)
         self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
 
 
@@ -78,7 +82,27 @@ class BertTopicClass:
 
         return output_labels
     
-    #TODO topic over time
+    #TODO topic over time https://maartengr.github.io/BERTopic/getting_started/topicsovertime/topicsovertime.html#example
+
+    def TopicOverTime(self,docs,timestamps):
+
+        print("LOADING TOPIC OVER TIME...")
+
+        trump = pd.read_csv('https://drive.google.com/uc?export=download&id=1xRKHaP-QwACMydlDnyFPEaFdtskJuBa6')
+        trump.text = trump.apply(lambda row: re.sub(r"http\S+", "", row.text).lower(), 1)
+        trump.text = trump.apply(lambda row: " ".join(filter(lambda x:x[0]!="@", row.text.split())), 1)
+        trump.text = trump.apply(lambda row: " ".join(re.sub("[^a-zA-Z]+", " ", row.text).split()), 1)
+        trump = trump.loc[(trump.isRetweet == "f") & (trump.text != ""), :]
+        timestamps = trump.date.to_list()[0:657]
+        # tweets = trump.text.to_list()
+
+        #print(len(timestamps))
+        #print(len(docs))
+
+        #TODO FIX not same size
+
+        topics_over_time = self.main_model.topics_over_time(docs,timestamps,nr_bins=2,datetime_format=None)
+        self.main_model.visualize_topics_over_time(topics_over_time).show()
 
     def PreviewMerge(self,text : list[str],min_similarity_topics):
         
@@ -102,7 +126,7 @@ class BertTopicClass:
                 calculate_probabilities=True,
                 verbose=True).fit(text)
             
-
+            #da testare con tanti topics
             merged_model = BERTopic.merge_models([self.main_model, topic_model_1], min_similarity=min_similarity_topics) #Increasing this value will increase the change of adding new topics
 
             sizeTopicMain = len(self.main_model.get_topic_info())
@@ -116,6 +140,10 @@ class BertTopicClass:
 
             print("NEW TOPICS DISCOVERED --> Do you like them")
             print(merged_model.get_topic_info().tail(discoveredTopics))
+
+            #TODO update merged models, is it right?
+
+
         except ValueError:
             traceback.print_exc() 
             print("ERROR OCCURED , try change your max_df, min_df value")

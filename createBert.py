@@ -35,10 +35,12 @@ if __name__ == "__main__":
     computed_document_array=np.array([np.array(xi) for xi in computed_embeddings])
     print(computed_document_array.shape)
 
+    BERT_NAME = "test1"
+
     BERT = None
     if(SAVE==1):
         #main_model = BERTopic(embedding_model=embeded_model,verbose=True)
-        BERT = BertTopicClass()
+        BERT = BertTopicClass(BERT_NAME)
         topics, prob = BERT.main_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
         
         BERT.PersistModel()

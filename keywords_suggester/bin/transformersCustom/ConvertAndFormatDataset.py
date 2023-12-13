@@ -60,6 +60,8 @@ def build_dataframe_from_csv_uploaded(BERT_MODEL,SELECTED_UPLOAD):
 # Funzione per convertire un file di testo in un file CSV
 def convert_to_csv(input_file_path, output_file_path,headers):
 
+    input_file_path = input_file_path.replace("\\","/")
+
     #TODO USER deve venire dal file, non generato
     with open(input_file_path, 'r',encoding="utf-8") as infile, open(output_file_path, 'w', newline='\n',encoding="utf-8") as outfile:
         lines = infile.readlines()
@@ -76,7 +78,7 @@ def convert_to_csv(input_file_path, output_file_path,headers):
 
         #truncate text to limit 
 
-        user = uuid.uuid4().hex[:5]
+        user = uuid.uuid4().hex[:5] #TODO read it from files or another structure
         data = [content.strip(),user,folder_metadata,created_at_string] #created at in order to delete FROM DB, cleaning action with delete
         csv_writer.writerow(data)
 
@@ -94,7 +96,7 @@ def process_directory(source_dir, destination_dir,headers):
             # Costruisci i percorsi completi per i file sorgenti e di destinazione
             source_file_path = os.path.join(root, file_name)
             dest_file_path = os.path.join(dest_folder, file_name.replace('.txt', '.csv'))
-            
+
             # Converte il file di testo in un file CSV
             convert_to_csv(source_file_path, dest_file_path,headers)
 

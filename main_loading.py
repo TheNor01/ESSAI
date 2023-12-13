@@ -44,6 +44,7 @@ if __name__ == '__main__':
     custom_headers = ["content", "user","category","created_at"]
 
     if os.path.isdir(source_directory):
+        #convert folder of txt files into csv
         process_directory(source_directory, destination_directory,custom_headers)
     else:
         print("DIR DOES NOT EXIST")
