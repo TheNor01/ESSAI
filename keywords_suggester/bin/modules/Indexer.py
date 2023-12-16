@@ -23,8 +23,9 @@ class Indexer():
         self.vectorstore = vectorstore
 
         self.record_manager = SQLRecordManager(
-            namespace, db_url="sqlite:///record_manager_cache.sql"
+            namespace, db_url="./keywords_suggester/storage/Indexer/sqlite:///record_manager_cache.sql"
         )
+        
 
         self.record_manager.create_schema()
 
