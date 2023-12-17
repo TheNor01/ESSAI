@@ -2,6 +2,7 @@ from chromadb.config import Settings
 import chromadb
 from langchain.schema import Document
 from langchain.vectorstores import Chroma
+from langchain.retrievers import BM25Retriever, EnsembleRetriever
 import os
 from keywords_suggester.bin.modules.Indexer import Indexer
 
@@ -31,6 +32,10 @@ class ChromaClass:
         )
         
         self.indexer = Indexer(collection_name,self.CLIENT)
+
+        self.remove_keys = {"start_index","row"}
+
+        self.__storeMetadataFile__()
         
 
     def GetListOfUsers(self):
@@ -39,6 +44,12 @@ class ChromaClass:
         users = set([ element['user'] for element in metadata_collection ])
         self.__storeUsersFile__(users)
         return users
+    
+
+    def GetListOfDocs(self):
+        collection = self.CLIENT.get()
+        doc_collection = collection["documents"]
+        return doc_collection
     
     def AddSpecialDocs(self,documents):
         
@@ -73,3 +84,17 @@ class ChromaClass:
         
         with open(os.path.join(tmp_dir,"users.txt"), "w+") as output:
             output.write(str(users))
+
+
+    def __storeMetadataFile__(self):
+        collection = self.CLIENT.get()
+        metadata_collection = collection["metadatas"]
+        uniques_keys = set().union(*(d.keys() for d in metadata_collection)).difference(self.remove_keys)
+        tmp_dir=self.storagePath + self.CLIENT._collection.name
+        if(not os.path.exists(tmp_dir)):
+            os.makedirs(tmp_dir)
+            print("CREATED METADATA DIR:"+tmp_dir)
+
+
+        with open(os.path.join(tmp_dir,"metadata.txt"), "w+") as output:
+            output.write(str(uniques_keys))

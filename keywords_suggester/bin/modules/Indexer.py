@@ -1,6 +1,6 @@
 
 from langchain.indexes import SQLRecordManager, index
-
+import os
 def singleton(cls):
     instances = {}
 
@@ -17,13 +17,18 @@ def singleton(cls):
 class Indexer():
     def __init__(self,collection_name,vectorstore):
         index_name_local = collection_name + "_index"
+        self.storagePath = "keywords_suggester/storage" + "/"
         namespace = f"chromadb/{index_name_local}"
         print("CREATED INDEX NAMESPACE -> "+namespace)
         
         self.vectorstore = vectorstore
+        tmp_dir=self.storagePath + "Indexer" + "/"
+        if(not os.path.exists(tmp_dir)):
+            os.makedirs(tmp_dir)
+            print("CREATED INDEXER DIR:"+tmp_dir)
 
         self.record_manager = SQLRecordManager(
-            namespace, db_url="./keywords_suggester/storage/Indexer/sqlite:///record_manager_cache.sql"
+            namespace, db_url="sqlite:///record_manager_cache.sql"
         )
         
 

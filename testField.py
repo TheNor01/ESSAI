@@ -3,6 +3,7 @@ from keywords_suggester.bin.modules.BertSingle import BertTopicClass
 from keywords_suggester.config import settings
 from sentence_transformers import SentenceTransformer
 from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+from keywords_suggester.bin.modules.RetriverSingle import RetrieverSingle
 
 
 BERT_NAME = "test1"
@@ -15,6 +16,18 @@ embed_model = settings.embed_model
 collection_name_local = "TestCollection"
 ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
+
+Retriever = RetrieverSingle(ChromaDB)
+
+
+
+#ChromaDB.__storeMetadataFile__()
+
+
+docs = Retriever.AssembleRetriever("apples","BM25")
+print(docs)
+
+exit()
 
 embeded_model = SentenceTransformer('all-mpnet-base-v2')
 collection=ChromaDB.CLIENT.get(include=["documents","embeddings","metadatas"])
