@@ -27,7 +27,7 @@ def init():
     embed_name="all-mpnet-base-v2"
 
     global embed_model
-    embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers"+embed_name)
+    embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/"+embed_name)
 
     global bert_embeded
     bert_embeded = SentenceTransformer(embed_name)

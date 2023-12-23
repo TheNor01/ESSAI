@@ -10,6 +10,7 @@ from bertopic.vectorizers import ClassTfidfTransformer
 from keywords_suggester.config import settings
 from bertopic import BERTopic
 from sentence_transformers import SentenceTransformer
+from bertopic.backend._utils import select_backend
 from datasets import load_dataset
 import traceback
 from transformers import pipeline
@@ -32,7 +33,7 @@ class BertTopicClass:
         settings.init()
         self.storageModel = "keywords_suggester/models_checkpoint/bert"+"/"+BERT_NAME
         self.embed_name = settings.embed_name
-        self.embeded_model = settings.embed_model
+        self.embeded_model = settings.bert_embeded
 
         self.hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
         self.vectorizer_model = CountVectorizer(stop_words="english", min_df=2,ngram_range=(1, 2)) # min_df changed to 1
@@ -40,7 +41,7 @@ class BertTopicClass:
         self.umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
 
         #min samples 15  #min_cluster_size
-
+        self.main_model = None
         if(restore==0):
             self.main_model = BERTopic(
                 umap_model=self.umap_model,
@@ -57,6 +58,7 @@ class BertTopicClass:
             print("LOADING MODEL FROM "+self.storageModel)
             #self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embeded_model)
             self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embed_name)
+            #self.main_modell.embedding_model = select_backend(my_embedding_model)
     
     def PersistModel(self):
         print("SAVING BERT INTO "+self.storageModel)

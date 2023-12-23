@@ -18,7 +18,7 @@ BERT = BertTopicClass(BERT_NAME,restore=1)
 
 print(BERT.TopicInfo())
 
-#BERT.VisualizeTopics()
+BERT.VisualizeTopics()
 
 similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
-print(similar_topics[0])
+print(BERT.main_model.get_topic(similar_topics[1]))

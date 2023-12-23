@@ -45,6 +45,11 @@ if __name__ == "__main__":
         BERT = BertTopicClass(BERT_NAME)
         topics, prob = BERT.main_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
         
+        print(BERT.main_model.embedding_model)
+
+        similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
+        print(BERT.main_model.get_topic(similar_topics[1]))
+        
         BERT.PersistModel()
         #BERT.save("./keywords_suggester/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
     else:
@@ -55,5 +60,4 @@ if __name__ == "__main__":
     print(BERT.main_model.get_topic_info())
 
 
-    similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
-    print(similar_topics[0])
+    
