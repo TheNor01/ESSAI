@@ -43,9 +43,10 @@ if __name__ == "__main__":
     if(SAVE==1):
         #main_model = BERTopic(embedding_model=embeded_model,verbose=True)
         BERT = BertTopicClass(BERT_NAME)
+        BERT.UpdateDocuments(computed_document)
         topics, prob = BERT.main_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
-        
-        print(BERT.main_model.embedding_model)
+
+        #print(BERT.main_model.embedding_model)
 
         similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
         print(BERT.main_model.get_topic(similar_topics[1]))

@@ -18,7 +18,26 @@ BERT = BertTopicClass(BERT_NAME,restore=1)
 
 print(BERT.TopicInfo())
 
-BERT.VisualizeTopics()
+candidate_topics = ["war", "politics", "sports"]
+labels = BERT.SuggestLabels("US officials - from Mr Biden to Secretary of State Antony Blinken and Defence Secretary Lloyd Austin - have continually affirmed what they present as Israel's right to self-defence, and declared that a military operation which stops short of removing Hamas from power would only guarantee more attacks.",candidate_topics)
+print(labels)
 
-similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
-print(BERT.main_model.get_topic(similar_topics[1]))
+
+
+#BERT.ChangeLabelMeaning(dictToChange={-1: "outliers"})
+#print(BERT.TopicInfo())
+
+#BERT.VisualizeTopics()
+"""
+topic = "healthy food"
+similar_topics, similarity = BERT.FindSimilarTopics(topic, top_n=5)
+
+print("SIMILAR TOPICS TO ->"+topic.upper())
+#print(BERT.main_model.get_topic(similar_topics[1]))
+
+for sim in similar_topics:
+    print(BERT.main_model.get_topic(sim))
+    print("========== \n")
+"""
+
+BERT.ReduceTopics(50)

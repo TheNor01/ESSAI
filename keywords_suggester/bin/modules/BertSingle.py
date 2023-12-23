@@ -1,6 +1,7 @@
 from chromadb.config import Settings
 import chromadb
 import os
+import pickle
 import re
 import pandas as pd
 from umap import UMAP
@@ -14,7 +15,9 @@ from bertopic.backend._utils import select_backend
 from datasets import load_dataset
 import traceback
 from transformers import pipeline
-
+from bertopic.representation import MaximalMarginalRelevance
+from wordcloud import WordCloud
+from matplotlib import pyplot as plt
 
 def singleton(cls):
     instances = {}
@@ -40,6 +43,12 @@ class BertTopicClass:
         self.ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
         self.umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
 
+
+        #NEW 
+        self.representation_model = MaximalMarginalRelevance(diversity=0.2)
+
+        self.init_documents = [] #store as PICKLE? cause i have to restore them if reduce topics is called
+
         #min samples 15  #min_cluster_size
         self.main_model = None
         if(restore==0):
@@ -49,11 +58,13 @@ class BertTopicClass:
                 embedding_model=self.embeded_model,
                 vectorizer_model=self.vectorizer_model,
                 ctfidf_model=self.ctfidf_model,
+                representation_model=self.representation_model,
                 top_n_words=5,
                 language='english',
                 calculate_probabilities=True,
                 verbose=True
             )
+
         else:
             print("LOADING MODEL FROM "+self.storageModel)
             #self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embeded_model)
@@ -65,8 +76,18 @@ class BertTopicClass:
         #self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
         self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embed_name)
 
+    def UpdateDocuments(self,docs):
+        self.init_documents = docs
+        self.__storeDocumentsPickle__()
+
+    def __storeDocumentsPickle__(self):
+        with open('./keywords_suggester/storage/documents_sync/documents.pkl', 'wb') as f:
+            pickle.dump(self.init_documents, f)
+
 
     def GenereateTopicLabels(self):
+
+        #spiegare
         topic_labels =  self.main_model.generate_topic_labels(nr_words=3,
                                                  topic_prefix=False,
                                                  word_length=10,
@@ -79,12 +100,31 @@ class BertTopicClass:
         print("SAVING CHANGES..")
         self.PersistModel()
 
+        print("CUSTOM LABELS :->")
+        print(self.main_model.custom_labels_)
+
+
+    def ReduceTopics(self,number_topics_to_obtain):
+
+        mynewlist=None
+        with open('./keywords_suggester/storage/documents_sync.pkl', 'rb') as f:
+            mynewlist = pickle.load(f)
+
+        if(not mynewlist):
+            print("INIT DOCUMENTS ARE EMPTY")
+            return
+    
+        print(type(mynewlist))
+        
+        self.main_model.reduce_topics(self.init_documents, nr_topics=number_topics_to_obtain)
+        #self.PersistModel()
+
 
     def VisualizeTopics(self):
         self.main_model.visualize_topics().show() #show need
 
 
-    def SuggestLabels(text,candidate_labels):
+    def SuggestLabels(self,text,candidate_labels):
         classifier_EXT = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
         output_labels = classifier_EXT(text, candidate_labels)
 
@@ -98,22 +138,20 @@ class BertTopicClass:
 
         similar_topics, similarity = self.main_model.find_topics(topic, top_n)
         return similar_topics, similarity
+    
+    def Genereate_WC(self, topic):
+        text = {word: value for word, value in self.main_model.get_topic(topic)}
+        wc = WordCloud(background_color="white", max_words=1000)
+        wc.generate_from_frequencies(text)
+        plt.imshow(wc, interpolation="bilinear")
+        plt.axis("off")
+        plt.show()
+
 
    
     def TopicOverTime(self,docs,timestamps):
 
         print("LOADING TOPIC OVER TIME...")
-
-        #trump = pd.read_csv('https://drive.google.com/uc?export=download&id=1xRKHaP-QwACMydlDnyFPEaFdtskJuBa6')
-        #trump.text = trump.apply(lambda row: re.sub(r"http\S+", "", row.text).lower(), 1)
-        #trump.text = trump.apply(lambda row: " ".join(filter(lambda x:x[0]!="@", row.text.split())), 1)
-        #trump.text = trump.apply(lambda row: " ".join(re.sub("[^a-zA-Z]+", " ", row.text).split()), 1)
-        #trump = trump.loc[(trump.isRetweet == "f") & (trump.text != ""), :]
-        # timestamps = trump.date.to_list()[0:657]
-        # tweets = trump.text.to_list()
-
-        #print(len(timestamps))
-        #print(len(docs))
 
         #TODO FIX not same size
 
