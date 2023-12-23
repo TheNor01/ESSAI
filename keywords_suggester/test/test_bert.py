@@ -11,12 +11,7 @@ from bertopic.vectorizers import OnlineCountVectorizer
 from sklearn.datasets import fetch_20newsgroups
 from datasets import load_dataset
 
-from sentence_transformers import SentenceTransformer
-
-from umap import UMAP
-from hdbscan import HDBSCAN
-from sentence_transformers import SentenceTransformer
-from sklearn.feature_extraction.text import CountVectorizer
+from keywords_suggester.bin.modules.BertSingle import BertTopicClass
 
 #https://maartengr.github.io/BERTopic/getting_started/representation/llm.html#langchain
 

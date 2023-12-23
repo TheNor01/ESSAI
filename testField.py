@@ -5,43 +5,20 @@ from sentence_transformers import SentenceTransformer
 from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 from keywords_suggester.bin.modules.RetriverSingle import RetrieverSingle
 
-
-BERT_NAME = "test1"
-BERT = BertTopicClass(BERT_NAME,restore=1)
-
-
 settings.init()
-persist_directory = settings.persist_directory+"init_dataset_small"+"/"
+persist_directory = settings.persist_directory+"init_dataset"+"/"
 embed_model = settings.embed_model
-collection_name_local = "TestCollection"
+collection_name_local = settings.collection_name
 ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 
-Retriever = RetrieverSingle(ChromaDB)
 
+BERT_NAME = settings.bert_name
+BERT = BertTopicClass(BERT_NAME,restore=1)
 
+print(BERT.TopicInfo())
 
-#ChromaDB.__storeMetadataFile__()
+#BERT.VisualizeTopics()
 
-
-docs = Retriever.AssembleRetriever("apples","BM25")
-print(docs)
-
-exit()
-
-embeded_model = SentenceTransformer('all-mpnet-base-v2')
-collection=ChromaDB.CLIENT.get(include=["documents","embeddings","metadatas"])
-
-computed_document = collection["documents"]
-computed_metadata = collection["metadatas"]
-
-#print(computed_document)
-print(type(computed_metadata))
-
-timestamps = [ x["created_at"] for x in computed_metadata]
-#print(timestamps)
-
-print(len(computed_document))
-print(len(timestamps))
-
-BERT.TopicOverTime(computed_document,timestamps)
+similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
+print(similar_topics[0])

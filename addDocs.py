@@ -12,6 +12,8 @@ import hashlib
 import pandas as pd
 import numpy as np
 from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import build_dataframe_from_csv_uploaded,clean_text
+from langchain.document_loaders import UnstructuredURLLoader
+
 #print(langchain_chroma._persist_directory)
 
 """
@@ -24,6 +26,11 @@ from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import bu
 
 
 if __name__ == '__main__':
+
+
+    #TODO AGGIUMGERE PICCOLA SEZIONE STREAMING
+    #https://faust.readthedocs.io/en/latest/
+
 
     settings.init()
     persist_directory = settings.persist_directory+"init_dataset_small"+"/"
@@ -49,8 +56,6 @@ if __name__ == '__main__':
     #PROCESS TO BERTOPIC
     BERT_NAME = "test1"
     BERT = BertTopicClass(BERT_NAME,restore=1)
-
-
 
     #TODO possiamo fare la preview con BERTOPIC prima di aggiungere effettivamente gli utenti alla collezione CHROMA
 

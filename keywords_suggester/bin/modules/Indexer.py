@@ -30,8 +30,7 @@ class Indexer():
         self.record_manager = SQLRecordManager(
             namespace, db_url="sqlite:///record_manager_cache.sql"
         )
-        
-
+    
         self.record_manager.create_schema()
 
     def IndexIncremental(self,docs):

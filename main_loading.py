@@ -6,7 +6,7 @@ from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import pr
 import chromadb
 from datetime import datetime
 from keywords_suggester.config import settings
-
+from tqdm import tqdm
 from langchain.indexes import SQLRecordManager, index
 from chromadb.config import Settings
 #SingleTon Chroma cross interface
@@ -27,28 +27,30 @@ if __name__ == '__main__':
 
     settings.init()
 
-    collection_name_local = "TestCollection"
+    collection_name_local = "default"
 
     LOAD_DOCS = 1
+    PREPROCESS = 1
     # Getting the current date and time
     dt = datetime.now()
 
     # getting the timestamp
     ts = datetime.timestamp(dt)
 
-    source_directory = settings.source_directory+"init_dataset_small"
+    source_directory = settings.source_directory+"init_dataset"
 
     basenameDataset = source_directory.split("/")[-1]
     print(basenameDataset)
     destination_directory = "keywords_suggester/dataset_transformed/"+basenameDataset+"_"+str(ts)
     custom_headers = ["content", "user","category","created_at"]
 
-    if os.path.isdir(source_directory):
-        #convert folder of txt files into csv
-        process_directory(source_directory, destination_directory,custom_headers)
-    else:
-        print("DIR DOES NOT EXIST")
-        exit()
+    if(PREPROCESS==1):
+        if os.path.isdir(source_directory):
+            #convert folder of txt files into csv
+            process_directory(source_directory, destination_directory,custom_headers)
+        else:
+            print("DIR DOES NOT EXIST")
+            exit()
 
     #FIRST LOAD OF DOCUMENTS (csv documents separated by PIPE)
     split_docs_chunked = InitChromaDocsFromPath(destination_directory) #deve essere transformed
@@ -58,7 +60,7 @@ if __name__ == '__main__':
     vectordb = None
     if LOAD_DOCS==1:
         #os.remove(settings.persist_directory+basenameDataset+"/") capire con chroma
-        for split_docs_chunk in split_docs_chunked:
+        for split_docs_chunk in tqdm(split_docs_chunked):
             vectordb = Chroma.from_documents(
                 documents=split_docs_chunk,
                 embedding=embed_model,

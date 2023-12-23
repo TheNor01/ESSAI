@@ -8,9 +8,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def SpliText():
     textSplitter = RecursiveCharacterTextSplitter(
-            # Set a really small chunk size, just to show.
-            chunk_size = 100,
-            chunk_overlap  = 20,
+            chunk_size = 256,
+            chunk_overlap  = 64,
             length_function = len,
             add_start_index = True,
         )

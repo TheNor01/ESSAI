@@ -15,14 +15,15 @@ if __name__ == "__main__":
 
     SAVE=1
 
+    #TODO move collection to settings
+
     settings.init()
-    persist_directory = settings.persist_directory+"init_dataset_small"+"/"
+    persist_directory = settings.persist_directory+"init_dataset"+"/"
     embed_model = settings.embed_model
-    collection_name_local = "TestCollection"
+    collection_name_local = "default"
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 
-    embeded_model = SentenceTransformer('all-mpnet-base-v2')
     collection=ChromaDB.CLIENT.get(include=["documents","embeddings","metadatas"])
 
     computed_document = collection["documents"]
@@ -30,12 +31,13 @@ if __name__ == "__main__":
 
     print(ChromaDB.CLIENT._collection.name)
     print(len(computed_embeddings))
+    print(len(computed_document))
 
 
     computed_document_array=np.array([np.array(xi) for xi in computed_embeddings])
     print(computed_document_array.shape)
 
-    BERT_NAME = "test1"
+    BERT_NAME = settings.bert_name
 
     BERT = None
     if(SAVE==1):
@@ -51,3 +53,7 @@ if __name__ == "__main__":
 
 
     print(BERT.main_model.get_topic_info())
+
+
+    similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
+    print(similar_topics[0])

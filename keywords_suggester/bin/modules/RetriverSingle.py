@@ -40,8 +40,26 @@ class RetrieverSingle():
         return docs
 
 
-
     
+    #WHERE FILTER, in order to retrieve documents passing metadatas
+    
+    #Where filters only search embeddings where the key exists. If you search collection.get(where={"version": {"$ne": 1}}). 
+    #Metadata that does not have the key version will not be returned.
+    # where: A Where type dict used to filter results by. E.g. `{"$and": ["color" : "red", "price": {"$gte": 4.20}]}`. Optional.
+    # where_document: A WhereDocument type dict used to filter by the documents. E.g. `{$contains: {"text": "hello"}}`. Optional.
+    
+    def ComposedQuery(self,dictQuery):
+        #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
+        #ChromaDB.CLIENT.get(where={"status": "read"}, where_document={"$contains": "affairs"})
+        #ChromaDB.CLIENT.get(where_document={"$or": [{"$contains": "global affairs"}, {"$contains": "domestic policy"}]})
+        #ChromaDB.CLIENT.get(where={"$or": [{"author": "john"}, {"author": "jack"}]})
+        #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"author": "john"}]})
+        #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
+        #ChromaDB.CLIENT.get(where_document={"$contains": "Article"},where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
+        #ChromaDB.CLIENT.get(where={'author': {'$in': ['john', 'jill']}})
+        docs = self.chroma.CLIENT.get(where=dictQuery)
+        return docs
+
 
     def BuildRetrieverDb(self,text,*args):
 

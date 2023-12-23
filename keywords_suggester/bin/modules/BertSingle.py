@@ -29,10 +29,10 @@ def singleton(cls):
 class BertTopicClass:
     def __init__(self,BERT_NAME,restore=0):
 
+        settings.init()
         self.storageModel = "keywords_suggester/models_checkpoint/bert"+"/"+BERT_NAME
-        self.embeded_model = SentenceTransformer('all-mpnet-base-v2')
-
-
+        self.embed_name = settings.embed_name
+        self.embeded_model = settings.embed_model
 
         self.hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
         self.vectorizer_model = CountVectorizer(stop_words="english", min_df=2,ngram_range=(1, 2)) # min_df changed to 1
@@ -55,11 +55,13 @@ class BertTopicClass:
             )
         else:
             print("LOADING MODEL FROM "+self.storageModel)
-            self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embeded_model)
+            #self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embeded_model)
+            self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embed_name)
     
     def PersistModel(self):
         print("SAVING BERT INTO "+self.storageModel)
-        self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
+        #self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
+        self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embed_name)
 
 
     def GenereateTopicLabels(self):
@@ -76,12 +78,25 @@ class BertTopicClass:
         self.PersistModel()
 
 
+    def VisualizeTopics(self):
+        self.main_model.visualize_topics().show() #show need
+
+
     def SuggestLabels(text,candidate_labels):
         classifier_EXT = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
         output_labels = classifier_EXT(text, candidate_labels)
 
         return output_labels
     
+    def TopicInfo(self,topic=None):
+        topic_df =  self.main_model.get_topic_info(topic)
+        return topic_df
+    
+    def FindSimilarTopics(self,topic,top_n=5):
+
+        similar_topics, similarity = self.main_model.find_topics(topic, top_n)
+        return similar_topics, similarity
+
    
     def TopicOverTime(self,docs,timestamps):
 
