@@ -19,6 +19,11 @@ from bertopic.representation import MaximalMarginalRelevance
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 
+
+#TODO https://maartengr.github.io/BERTopic/getting_started/topicsperclass/topicsperclass.html, https://maartengr.github.io/BERTopic/getting_started/distribution/distribution.html
+
+
+
 def singleton(cls):
     instances = {}
 
@@ -31,7 +36,7 @@ def singleton(cls):
 
 @singleton
 class BertTopicClass:
-    def __init__(self,BERT_NAME,restore=0):
+    def __init__(self,BERT_NAME,restore=0,nr_topics='auto'):
 
         settings.init()
         self.storageModel = "keywords_suggester/models_checkpoint/bert"+"/"+BERT_NAME
@@ -43,6 +48,8 @@ class BertTopicClass:
         self.ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
         self.umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
 
+        #NEW 
+        self.nr_topics = nr_topics
 
         #NEW 
         self.representation_model = MaximalMarginalRelevance(diversity=0.2)
@@ -59,6 +66,7 @@ class BertTopicClass:
                 vectorizer_model=self.vectorizer_model,
                 ctfidf_model=self.ctfidf_model,
                 representation_model=self.representation_model,
+                nr_topics=self.nr_topics,
                 top_n_words=5,
                 language='english',
                 calculate_probabilities=True,
@@ -104,25 +112,42 @@ class BertTopicClass:
         print(self.main_model.custom_labels_)
 
 
-    def ReduceTopics(self,number_topics_to_obtain):
-
+    def __loadDocumentsSync__(self):
         mynewlist=None
-        with open('./keywords_suggester/storage/documents_sync.pkl', 'rb') as f:
+        with open('./keywords_suggester/storage/documents_sync.pkl', 'rb') as f:  #TODO we should query collection documents
             mynewlist = pickle.load(f)
 
         if(not mynewlist):
             print("INIT DOCUMENTS ARE EMPTY")
             return
-    
-        print(type(mynewlist))
-        
-        self.main_model.reduce_topics(self.init_documents, nr_topics=number_topics_to_obtain)
-        #self.PersistModel()
 
+        return mynewlist
+
+
+    def ReduceTopics(self,number_topics_to_obtain='auto'):
+
+        #AgglomerativeClustering choice
+
+        mynewlist = self.__loadDocumentsSync__()
+        
+        self.main_model.reduce_topics(mynewlist, nr_topics=number_topics_to_obtain)
+
+        print(self.main_model.get_topic_info())
+        self.PersistModel()
+
+
+    def ManualMergeTopics(self,list_to_merge):
+        #[[1, 2][3, 4]]
+        mynewlist = self.__loadDocumentsSync__()
+
+        for couple in list_to_merge:
+            print("MERGING ",self.main_model.get_topic_info(couple[0])["Name"].item()," - " ,self.main_model.get_topic_info(couple[1])["Name"].item())
+            print("======")
+        self.main_model.merge_topics(mynewlist, list_to_merge)
+        self.PersistModel()
 
     def VisualizeTopics(self):
-        self.main_model.visualize_topics().show() #show need
-
+        self.main_model.visualize_topics().show()
 
     def SuggestLabels(self,text,candidate_labels):
         classifier_EXT = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
@@ -160,9 +185,9 @@ class BertTopicClass:
 
     def PreviewMerge(self,text : list[str],min_similarity_topics):
         
-    
         #IDEA slide parameters in order to preview different result
 
+        #TODO copy constructor
         local_hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
         local_vectorizer_model = CountVectorizer(stop_words="english",ngram_range=(1, 2)) # min_df changed to 1
         local_ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)

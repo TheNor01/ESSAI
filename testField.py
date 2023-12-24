@@ -13,21 +13,18 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 
 
-BERT_NAME = settings.bert_name
-BERT = BertTopicClass(BERT_NAME,restore=1)
+#BERT_NAME = settings.bert_name
+#BERT = BertTopicClass(BERT_NAME,restore=1)
 
-print(BERT.TopicInfo())
-
-candidate_topics = ["war", "politics", "sports"]
-labels = BERT.SuggestLabels("US officials - from Mr Biden to Secretary of State Antony Blinken and Defence Secretary Lloyd Austin - have continually affirmed what they present as Israel's right to self-defence, and declared that a military operation which stops short of removing Hamas from power would only guarantee more attacks.",candidate_topics)
-print(labels)
+#candidate_topics = ["war", "politics", "sports"]
+#labels = BERT.SuggestLabels("US officials - from Mr Biden to Secretary of State Antony Blinken and Defence Secretary Lloyd Austin - have continually affirmed what they present as Israel's right to self-defence, and declared that a military operation which stops short of removing Hamas from power would only guarantee more attacks.",candidate_topics)
+#print(labels)
 
 
 
 #BERT.ChangeLabelMeaning(dictToChange={-1: "outliers"})
 #print(BERT.TopicInfo())
 
-#BERT.VisualizeTopics()
 """
 topic = "healthy food"
 similar_topics, similarity = BERT.FindSimilarTopics(topic, top_n=5)
@@ -40,4 +37,10 @@ for sim in similar_topics:
     print("========== \n")
 """
 
-BERT.ReduceTopics(50)
+#[[1, 2][3, 4]]
+#BERT.ManualMergeTopics([[11,16]])
+#BERT.ReduceTopics(50)
+
+
+ChromaDB.HistogramUsersTopics()
+#BERT.Genereate_WC(11)

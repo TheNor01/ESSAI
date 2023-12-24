@@ -5,6 +5,10 @@ from langchain.vectorstores import Chroma
 from langchain.retrievers import BM25Retriever, EnsembleRetriever
 import os
 from keywords_suggester.bin.modules.Indexer import Indexer
+import pandas as pd
+from matplotlib import pyplot as plt
+import mplcursors
+
 
 def singleton(cls):
     instances = {}
@@ -44,6 +48,48 @@ class ChromaClass:
         users = set([ element['user'] for element in metadata_collection ])
         self.__storeUsersFile__(users)
         return users
+    
+
+    def HistogramUsersTopics(self): #extract a histogram of all users with their main topic
+        collection = self.CLIENT.get()
+        metadata_collection = collection["metadatas"]
+        user_list = []
+        category_list = []
+        for element in metadata_collection:
+             user_list.append(element["user"])
+             category_list.append(element["category"])
+
+
+        hist_df = pd.DataFrame(list(zip(user_list, category_list)),columns=['user','category'])
+        #print(hist_df)
+
+        target_user = '95d12'
+        #target_user = None
+        # Query the DataFrame for information related to the target user
+        if(target_user):
+            hist_df = hist_df[hist_df['user'] == target_user]
+
+        print(hist_df)
+
+        threshold_percentage = 5.0
+        category_counts = hist_df['category'].value_counts()
+        low_percentage_categories = category_counts[category_counts / category_counts.sum() * 100 < threshold_percentage].index
+        
+        category_counts['Other'] = category_counts[low_percentage_categories].sum()
+        category_counts = category_counts.drop(low_percentage_categories)
+
+        # Filter out categories with 0 percentage values
+        category_counts = category_counts[category_counts > 0]
+
+        # Plotting the pie chart
+        fig, ax = plt.subplots(figsize=(8, 8))
+        pie = ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=90)
+
+        # Add hover labels
+        mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"{sel.artist.get_label()}\nUsers: {category_counts[sel.artist.get_label()]}"))
+
+        plt.show()
+        pass
     
 
     def GetListOfDocs(self):
