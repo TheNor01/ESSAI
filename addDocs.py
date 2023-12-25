@@ -32,11 +32,14 @@ if __name__ == '__main__':
     #https://faust.readthedocs.io/en/latest/
 
 
+    #TODO capire se conviene fare prima la preview e poi classificare o al contrario
+
+
     settings.init()
     persist_directory = settings.persist_directory+"init_dataset_small"+"/"
     embed_model = settings.embed_model
 
-    collection_name_local = "TestCollection"
+    collection_name_local = settings.collection_name
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
     print("SCANNING UPLOAD DIR.. --> "+settings.upload_directory)
@@ -54,7 +57,7 @@ if __name__ == '__main__':
     #LOAD A simple csv file user,text or structured --> if not structured bertopic will categorize them.
     
     #PROCESS TO BERTOPIC
-    BERT_NAME = "test1"
+    BERT_NAME = settings.bert_name
     BERT = BertTopicClass(BERT_NAME,restore=1)
 
     #TODO possiamo fare la preview con BERTOPIC prima di aggiungere effettivamente gli utenti alla collezione CHROMA
@@ -66,11 +69,11 @@ if __name__ == '__main__':
     texts = df['CONTENT'].tolist() #dovrebbero esserci un numero di sample pari a K hdbscan --> Edit. servono molti sample
     clean_texts = list(map(clean_text, texts))
     print("CSV UPLOAD LENGHT: ->"+str(len(clean_texts)))
-    min_similarity_topics = 1.5
+    min_similarity_topics = 0.8
     
     
     #PREVIEW
-    #BERT.PreviewMerge(clean_texts,min_similarity_topics) #if category is not present
+    BERT.PreviewMerge(clean_texts,min_similarity_topics) #if category is not present
 
 
     upload_df = build_dataframe_from_csv_uploaded(BERT,CHOOSED_FILE)

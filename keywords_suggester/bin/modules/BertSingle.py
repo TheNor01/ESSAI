@@ -79,10 +79,36 @@ class BertTopicClass:
             self.main_model = BERTopic.load(self.storageModel, embedding_model=self.embed_name)
             #self.main_modell.embedding_model = select_backend(my_embedding_model)
     
-    def PersistModel(self):
-        print("SAVING BERT INTO "+self.storageModel)
-        #self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
-        self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embed_name)
+    def PersistModel(self,modelToSave=None):
+
+        modelToStore = None
+        if not modelToSave is None:
+            modelToStore=modelToSave
+            print("Merged model saving")
+        else:
+            modelToStore=self.main_model
+
+            print("old model saving")
+
+        if(os.path.exists(self.storageModel)):
+            print("FOUND A SAVED MODEL")
+            print("WOULD YOU LIKE OVERWRITE IT?")
+
+            user_input = input('(y/n): ')
+            if user_input.lower() == 'y':
+                print("SAVING BERT INTO "+self.storageModel)
+                #self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
+                modelToStore.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embed_name)
+            elif user_input.lower() == 'n':
+                return
+            else:
+                print('Type y or n')
+        else:
+            print("SAVING BERT INTO "+self.storageModel)
+            #self.main_model.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embeded_model)
+            modelToStore.save(self.storageModel, serialization="pytorch", save_ctfidf=True, save_embedding_model=self.embed_name)
+
+        
 
     def UpdateDocuments(self,docs):
         self.init_documents = docs
@@ -183,44 +209,64 @@ class BertTopicClass:
         topics_over_time = self.main_model.topics_over_time(docs,timestamps,datetime_format=None)
         self.main_model.visualize_topics_over_time(topics_over_time).show()
 
+    def __documentsPerTopic__(self,merged_model,new_docs):
+
+        #old_docs are trained documents
+        old_docs = self.__loadDocumentsSync__()
+        documents = pd.DataFrame(
+            {
+                "Document": old_docs + new_docs,
+                "ID": range(len(old_docs)+len(new_docs)),
+                "Topic": merged_model.topics_,
+                "Image": None
+            })
+        return documents
+
+
     def PreviewMerge(self,text : list[str],min_similarity_topics):
         
-        #IDEA slide parameters in order to preview different result
-
-        #TODO copy constructor
-        local_hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
-        local_vectorizer_model = CountVectorizer(stop_words="english",ngram_range=(1, 2)) # min_df changed to 1
-        local_ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
         local_umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
 
         try:
             topic_model_1 = BERTopic(
                 umap_model=local_umap_model,
-                hdbscan_model=local_hdbscan_model,
                 embedding_model=self.embeded_model,
-                vectorizer_model=local_vectorizer_model,
-                ctfidf_model=local_ctfidf_model,
-                top_n_words=5,
+                top_n_words=10,
+                nr_topics='auto',
                 language='english',
                 calculate_probabilities=True,
                 verbose=True).fit(text)
             
-            #da testare con tanti topics
+
             merged_model = BERTopic.merge_models([self.main_model, topic_model_1], min_similarity=min_similarity_topics) #Increasing this value will increase the change of adding new topics
 
             sizeTopicMain = len(self.main_model.get_topic_info())
             sizeTopicNew = len(merged_model.get_topic_info())
-
 
             print(sizeTopicMain)
             print(sizeTopicNew)
 
             discoveredTopics = sizeTopicNew-sizeTopicMain
 
-            print("NEW TOPICS DISCOVERED --> Do you like them")
+            print("NEW TOPICS DISCOVERED -->")
             print(merged_model.get_topic_info().tail(discoveredTopics))
 
-            #TODO update merged models, is it right?
+            #SAVE WEIGHTS
+
+            # Assign CountVectorizer to merged model
+            merged_model.vectorizer_model = topic_model_1.vectorizer_model
+            documents_per_topic = self.__documentsPerTopic__(merged_model,text)
+
+
+            # Re-calculate c-TF-IDF
+            c_tf_idf, _ = merged_model._c_tf_idf(documents_per_topic)
+            merged_model.c_tf_idf_ = c_tf_idf
+            print("UPDATED WEIGHTS")
+            print("SAVING MERGED MODELS")
+
+            print(merged_model.get_topic_info())
+
+            self.PersistModel(merged_model)
 
 
         except ValueError:

@@ -38,10 +38,13 @@ def build_dataframe_from_csv_uploaded(BERT_MODEL,SELECTED_UPLOAD):
             documents_list.append(local_doc)
             users_list.append(row[0])
             if(USE_BERT==1):
-                topics, probs = BERT_MODEL.main_model.transform(local_doc) #Non necessario se è presente la colonna category
+                topics, probs = BERT_MODEL.main_model.transform(local_doc)
                 max_topic = topics[0]
+                #print(topics)
+                #print(BERT_MODEL.main_model.get_topic_info(max_topic))
                 topic_mapped = dict_topic_name[max_topic] 
                 topics_list.append(topic_mapped)
+
             else:
                 #Assume Category is 3rd column mapped
                 local_category = row[2]

@@ -50,7 +50,7 @@ class ChromaClass:
         return users
     
 
-    def HistogramUsersTopics(self): #extract a histogram of all users with their main topic
+    def HistogramUsersTopics(self,target_user = None): #extract a histogram of all users with their main topic
         collection = self.CLIENT.get()
         metadata_collection = collection["metadatas"]
         user_list = []
@@ -63,8 +63,7 @@ class ChromaClass:
         hist_df = pd.DataFrame(list(zip(user_list, category_list)),columns=['user','category'])
         #print(hist_df)
 
-        target_user = '95d12'
-        #target_user = None
+        #target_user = '95d12'
         # Query the DataFrame for information related to the target user
         if(target_user):
             hist_df = hist_df[hist_df['user'] == target_user]
@@ -85,7 +84,8 @@ class ChromaClass:
         fig, ax = plt.subplots(figsize=(8, 8))
         pie = ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=90)
 
-        # Add hover labels
+        #TODO Add hover labels
+        #TODO PLot better
         mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"{sel.artist.get_label()}\nUsers: {category_counts[sel.artist.get_label()]}"))
 
         plt.show()
@@ -114,6 +114,8 @@ class ChromaClass:
         self.persistent_client.heartbeat()
 
     
+        #TODO Farli passare da indexer
+
         #ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
         #print("TOTAL IDS ADDED: -> "+str(len(ids_added)))
         
