@@ -15,12 +15,10 @@ if __name__ == "__main__":
 
     SAVE=1
 
-    #TODO move collection to settings
-
     settings.init()
     persist_directory = settings.persist_directory+"init_dataset"+"/"
     embed_model = settings.embed_model
-    collection_name_local = "default"
+    collection_name_local = settings.collection_name
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 
@@ -45,11 +43,6 @@ if __name__ == "__main__":
         BERT = BertTopicClass(BERT_NAME)
         BERT.UpdateDocuments(computed_document)
         topics, prob = BERT.main_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
-
-        #print(BERT.main_model.embedding_model)
-
-        similar_topics, similarity = BERT.FindSimilarTopics("food", top_n=5)
-        print(BERT.main_model.get_topic(similar_topics[1]))
         
         BERT.PersistModel()
         #BERT.save("./keywords_suggester/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
@@ -59,6 +52,7 @@ if __name__ == "__main__":
 
 
     print(BERT.main_model.get_topic_info())
+    BERT.Genereate_WC(11)
 
 
     

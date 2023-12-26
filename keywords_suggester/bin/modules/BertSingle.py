@@ -18,7 +18,9 @@ from transformers import pipeline
 from bertopic.representation import MaximalMarginalRelevance
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
-
+from random import randrange
+from datetime import timedelta
+from datetime import datetime
 
 #TODO https://maartengr.github.io/BERTopic/getting_started/topicsperclass/topicsperclass.html, https://maartengr.github.io/BERTopic/getting_started/distribution/distribution.html
 
@@ -46,13 +48,13 @@ class BertTopicClass:
         self.hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
         self.vectorizer_model = CountVectorizer(stop_words="english", min_df=2,ngram_range=(1, 2)) # min_df changed to 1
         self.ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
-        self.umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=42)
+        self.umap_model = UMAP(n_neighbors=15, n_components=15, min_dist=0.1, metric='cosine', random_state=42) #TODO provare mathanan
 
         #NEW 
         self.nr_topics = nr_topics
 
         #NEW 
-        self.representation_model = MaximalMarginalRelevance(diversity=0.2)
+        self.representation_model = MaximalMarginalRelevance(diversity=0.6,top_n_words=15)
 
         self.init_documents = [] #store as PICKLE? cause i have to restore them if reduce topics is called
 
@@ -67,7 +69,7 @@ class BertTopicClass:
                 ctfidf_model=self.ctfidf_model,
                 representation_model=self.representation_model,
                 nr_topics=self.nr_topics,
-                top_n_words=5,
+                top_n_words=15,
                 language='english',
                 calculate_probabilities=True,
                 verbose=True
@@ -110,18 +112,23 @@ class BertTopicClass:
 
         
 
-    def UpdateDocuments(self,docs):
-        self.init_documents = docs
-        self.__storeDocumentsPickle__()
+    def UpdateDocuments(self,docs): #TODO aggiungere alla lista esistente quelli passati
+        docs_to_save=None
+        if(not self.init_documents):
+            docs_to_save = self.init_documents 
+        else: #extend documents to save
+            docs_to_save = docs.extend(self.init_documents)
+        self.__storeDocumentsPickle__(docs_to_save)
 
-    def __storeDocumentsPickle__(self):
+    
+    def __storeDocumentsPickle__(self,docs_to_save):
         with open('./keywords_suggester/storage/documents_sync/documents.pkl', 'wb') as f:
-            pickle.dump(self.init_documents, f)
+            pickle.dump(docs_to_save, f)
 
 
     def GenereateTopicLabels(self):
 
-        #spiegare
+        #TODO spiegare
         topic_labels =  self.main_model.generate_topic_labels(nr_words=3,
                                                  topic_prefix=False,
                                                  word_length=10,
@@ -198,20 +205,40 @@ class BertTopicClass:
         plt.axis("off")
         plt.show()
 
-
+    def GenerateTopicChart(self):
+        self.main_model.visualize_barchart().show()
    
-    def TopicOverTime(self,docs,timestamps):
+    def TopicOverTime(self,collectionChroma):
+
+        #IT will be a report
 
         print("LOADING TOPIC OVER TIME...")
+        docs = collectionChroma["documents"][0:8000]
+        timestamps = [element["created_at"] for element in collectionChroma["metadatas"]][0:8000]
 
-        #TODO FIX not same size
+        topic_list = []
+        for doc in docs:
+            topics, _ = self.main_model.transform(doc)
+            max_topic = topics[0]
+            topic_list.append(max_topic)
+           
+        if len(timestamps) != len(docs):
+            print("NOT EQUAL SIZE TIMESTAMPS AND DOCS")
+            return
 
-        topics_over_time = self.main_model.topics_over_time(docs,timestamps,datetime_format=None)
-        self.main_model.visualize_topics_over_time(topics_over_time).show()
+        print(len(timestamps))
+        print(len(docs))
+
+        topics_over_time = self.main_model.topics_over_time(docs,timestamps,topics=topic_list,datetime_format="%Y-%m-%d")
+
+        #print(topics_over_time)
+
+        fig = self.main_model.visualize_topics_over_time(topics_over_time,top_n_topics=6).show()
+        fig.write_html("./DYM.html")
 
     def __documentsPerTopic__(self,merged_model,new_docs):
 
-        #old_docs are trained documents
+        #old_docs are trained documents, updated sync document
         old_docs = self.__loadDocumentsSync__()
         documents = pd.DataFrame(
             {
@@ -220,6 +247,9 @@ class BertTopicClass:
                 "Topic": merged_model.topics_,
                 "Image": None
             })
+        
+        self.UpdateDocuments(old_docs.extend(new_docs)) #store new documents
+
         return documents
 
 

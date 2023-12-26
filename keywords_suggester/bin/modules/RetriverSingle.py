@@ -77,7 +77,7 @@ class RetrieverSingle():
                 retriever_db = self.chroma.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit,"score_threshold": _score_threshold})
             elif(_search_type=="mmr"):
                 #retriever_db = self.chroma.as_retriever(search_type="_search_type")
-                retriever_db = self.chroma.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit,"score_threshold": _score_threshold})
+                retriever_db = self.chroma.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit})
 
             print("USING RETRIEVER DB")
             print("SEARCH TYPE = "+_search_type)

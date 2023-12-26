@@ -8,7 +8,8 @@ from keywords_suggester.bin.modules.Indexer import Indexer
 import pandas as pd
 from matplotlib import pyplot as plt
 import mplcursors
-
+import plotly.express as px
+import seaborn as sns
 
 def singleton(cls):
     instances = {}
@@ -68,29 +69,30 @@ class ChromaClass:
         if(target_user):
             hist_df = hist_df[hist_df['user'] == target_user]
 
-        print(hist_df)
+        inner_title=None
+        if(target_user==None):
+            inner_title = "Topic Distribution By Population"
+        else:
+            inner_title = "Topic Distribution Of: "+target_user
+
+
+        #print(hist_df)
 
         threshold_percentage = 5.0
         category_counts = hist_df['category'].value_counts()
-        low_percentage_categories = category_counts[category_counts / category_counts.sum() * 100 < threshold_percentage].index
-        
-        category_counts['Other'] = category_counts[low_percentage_categories].sum()
-        category_counts = category_counts.drop(low_percentage_categories)
 
-        # Filter out categories with 0 percentage values
-        category_counts = category_counts[category_counts > 0]
+        hist_df['counts'] = hist_df.groupby(['category'])['user'].transform('count')
 
-        # Plotting the pie chart
-        fig, ax = plt.subplots(figsize=(8, 8))
-        pie = ax.pie(category_counts, labels=category_counts.index, autopct='%1.1f%%', startangle=90)
+        result = hist_df[["category","counts"]].drop_duplicates()
+        result['counts_pct'] = result.counts / result.counts.sum()
 
-        #TODO Add hover labels
-        #TODO PLot better
-        mplcursors.cursor(hover=True).connect("add", lambda sel: sel.annotation.set_text(f"{sel.artist.get_label()}\nUsers: {category_counts[sel.artist.get_label()]}"))
+        print(result)
 
-        plt.show()
-        pass
-    
+        result.loc[result['counts'] < 300, 'category'] = 'Other category' # Represent only large countries
+        fig = px.pie(result, values='counts', names='category', title=inner_title)
+        fig.show()
+
+        return
 
     def GetListOfDocs(self):
         collection = self.CLIENT.get()
