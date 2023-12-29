@@ -49,13 +49,16 @@ class RetrieverSingle():
     # where_document: A WhereDocument type dict used to filter by the documents. E.g. `{$contains: {"text": "hello"}}`. Optional.
     
     def ComposedQuery(self,dictQuery):
+
+        #TODO provare mettendo prima    https://docs.trychroma.com/usage-guide#querying-a-collection
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
         #ChromaDB.CLIENT.get(where={"status": "read"}, where_document={"$contains": "affairs"})
         #ChromaDB.CLIENT.get(where_document={"$or": [{"$contains": "global affairs"}, {"$contains": "domestic policy"}]})
         #ChromaDB.CLIENT.get(where={"$or": [{"author": "john"}, {"author": "jack"}]})
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"author": "john"}]})
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
-        #ChromaDB.CLIENT.get(where_document={"$contains": "Article"},where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
+        self.chroma.CLIENT.get(where_document={"$contains": "Article"},
+                               where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
         #ChromaDB.CLIENT.get(where={'author': {'$in': ['john', 'jill']}})
         docs = self.chroma.CLIENT.get(where=dictQuery)
         return docs

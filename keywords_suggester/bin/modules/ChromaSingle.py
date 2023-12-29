@@ -116,7 +116,7 @@ class ChromaClass:
         self.persistent_client.heartbeat()
 
     
-        #TODO Farli passare da indexer
+        #TODO Farli passare da indexer per essere inseriti
 
         #ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
         #print("TOTAL IDS ADDED: -> "+str(len(ids_added)))

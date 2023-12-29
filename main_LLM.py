@@ -41,6 +41,7 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 mygpt = LLModel(ChromaDB)
 
-docs = mygpt.SelfQuery("give me documents of category sports")
+docs = mygpt.SelfQuery("give me documents with category sport")
+#docs = mygpt.StructuredQuery("give me sports documents with creation date equals to 2023-06-02. You have to treat date as string")
 
 pretty_print_docs(docs)
