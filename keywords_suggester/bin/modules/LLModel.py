@@ -88,15 +88,17 @@ class LLModel():
         #https://python.langchain.com/docs/use_cases/question_answering/
 
         """
+        
         retriever = SelfQueryRetriever.from_llm(
             self.llm,
             self.chroma.CLIENT,
             self.document_content_description,
             self.metadata_field_info,
-            structured_query_translator=ChromaTranslator(),
+            #structured_query_translator=ChromaTranslator(),
             verbose=True
+        )
+        
         """
-
         retriever = SelfQueryRetriever(
             query_constructor=self.chain,
             vectorstore=self.chroma.CLIENT,
@@ -104,7 +106,8 @@ class LLModel():
             verbose=True
         )
 
-        docs = retriever.get_relevant_documents(query)
+        docs = retriever.invoke(query)
+        #docs = retriever.get_relevant_documents(query)
         if(len(docs)==0):
             print("NO DATA")
         return docs
