@@ -9,17 +9,20 @@ from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 if __name__ == '__main__':
 
     settings.init()
-    persist_directory = settings.persist_directory+"init_dataset_small"+"/"
+    persist_directory = settings.persist_directory+settings.init_dataset+"/"
     embed_model = settings.embed_model
 
-    collection_name_local = "TestCollection"
+    collection_name_local = settings.collection_name
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 
     users_collection = ChromaDB.GetListOfUsers()
-
-    docs = ChromaDB.CLIENT.get(where={"user": "9630e"},limit=5,include=["metadatas","documents"])
-    if(len(docs)==0):
+    
+    print("GETTING user")
+    docs = ChromaDB.CLIENT.get(where={"user": "f4225"},limit=5,include=["metadatas","documents"])
+    
+    print(docs)
+    if(len(docs["documents"])==0):
         print("NO DOCS")
         exit()
     

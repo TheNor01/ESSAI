@@ -7,9 +7,7 @@ import os
 from keywords_suggester.bin.modules.Indexer import Indexer
 import pandas as pd
 from matplotlib import pyplot as plt
-import mplcursors
 import plotly.express as px
-import seaborn as sns
 
 def singleton(cls):
     instances = {}
@@ -127,6 +125,7 @@ class ChromaClass:
     
     def __storeUsersFile__ (self,users): #da spostare magari su INIT
 
+        print("STORING USERS TO FILE")
         tmp_dir=self.storagePath + self.CLIENT._collection.name
         if(not os.path.exists(tmp_dir)):
             os.makedirs(tmp_dir)
@@ -134,6 +133,8 @@ class ChromaClass:
         
         with open(os.path.join(tmp_dir,"users.txt"), "w+") as output:
             output.write(str(users))
+            
+            print("USERS STORED")
 
 
     def __storeMetadataFile__(self):
