@@ -22,7 +22,7 @@ from keywords_suggester.config import settings
 
 
 def pretty_print_docs(docs):
-    print(f"\n{'-' * 100}\n".join([f"Document {i+1}:\n\n" + d.page_content for i, d in enumerate(docs)]))
+    print(f"\n{'-' * 100}\n".join([f"Document {i+1}:\n\n" + d.page_content + "Metadata:" + d.metadata for i, d in enumerate(docs)]))
 
 llm = GPT4All(
     model="./keywords_suggester/storage/llm/mistral-7b-openorca.Q4_0.gguf",
@@ -33,15 +33,15 @@ llm = GPT4All(
 
 # Run
 settings.init()
-persist_directory = settings.persist_directory+"init_dataset_small"+"/"
+persist_directory = settings.persist_directory+settings.init_dataset+"/"
 embed_model = settings.embed_model
-collection_name_local = "TestCollection"
+collection_name_local = settings.collection_name
 
 ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 mygpt = LLModel(ChromaDB)
 
-docs = mygpt.SelfQuery("give me documents with category sport")
+docs = mygpt.SelfQuery("what food is healthy?")
 #docs = mygpt.StructuredQuery("give me sports documents with creation date equals to 2023-06-02. You have to treat date as string")
 
 pretty_print_docs(docs)

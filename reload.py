@@ -115,10 +115,10 @@ print(result["source_documents"])
 if __name__ == '__main__':
 
     settings.init()
-    persist_directory = settings.persist_directory+"init_dataset_small"+"/"
+    persist_directory = settings.persist_directory+settings.init_dataset+"/"
     embed_model = settings.embed_model
 
-    collection_name_local = "TestCollection"
+    collection_name_local = settings.collection_name
     ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 
