@@ -17,9 +17,12 @@ if __name__ == '__main__':
 
 
     users_collection = ChromaDB.GetListOfUsers()
-
-    docs = ChromaDB.CLIENT.get(where={"user": "9630e"},limit=5,include=["metadatas","documents"])
-    if(len(docs)==0):
+    
+    print("GETTING user")
+    docs = ChromaDB.CLIENT.get(where={"user": "f4225"},limit=5,include=["metadatas","documents"])
+    
+    print(docs)
+    if(len(docs["documents"])==0):
         print("NO DOCS")
         exit()
     

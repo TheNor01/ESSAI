@@ -69,7 +69,7 @@ def convert_to_csv(input_file_path, output_file_path,headers):
     input_file_path = input_file_path.replace("\\","/")
 
     #TODO USER deve venire dal file, non generato
-    with open(input_file_path, 'r',encoding="utf-8") as infile, open(output_file_path, 'w', newline='\n',encoding="utf-8") as outfile:
+    with open(input_file_path, 'r',encoding="utf-8",errors='ignore') as infile, open(output_file_path, 'w', newline='\n',encoding="utf-8") as outfile:
         lines = infile.readlines()
         content = ('\t'.join([line.strip() for line in lines])).replace('|','')
 

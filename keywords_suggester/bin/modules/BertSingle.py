@@ -122,6 +122,9 @@ class BertTopicClass:
 
     
     def __storeDocumentsPickle__(self,docs_to_save):
+        path="./keywords_suggester/storage/documents_sync"
+        if(not os.path.exists(path)):
+            os.makedirs(path)
         with open('./keywords_suggester/storage/documents_sync/documents.pkl', 'wb') as f:
             pickle.dump(docs_to_save, f)
 
