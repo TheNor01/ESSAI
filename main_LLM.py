@@ -19,16 +19,12 @@ from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 from keywords_suggester.bin.modules.LLModel import LLModel
 from keywords_suggester.config import settings
 
+import logging
 
+logging.basicConfig(level = logging.INFO)
 
 def pretty_print_docs(docs):
-    print(f"\n{'-' * 100}\n".join([f"Document {i+1}:\n\n" + d.page_content + "Metadata:" + d.metadata for i, d in enumerate(docs)]))
-
-llm = GPT4All(
-    model="./keywords_suggester/storage/llm/mistral-7b-openorca.Q4_0.gguf",
-    max_tokens=2048
-)
-
+    print(f"\n{'-' * 100}\n".join([f"Document {i+1}:\n\n" + d.page_content + "Metadata:" + str(d.metadata) for i, d in enumerate(docs)]))
 
 
 # Run
@@ -41,7 +37,10 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 mygpt = LLModel(ChromaDB)
 
-docs = mygpt.SelfQuery("what food is healthy?")
+#docs = mygpt.SelfQuery("what food is healthy? Return more than 10 results")
+docs = mygpt.SelfQuery("What are food documents created in year 2024")
 #docs = mygpt.StructuredQuery("give me sports documents with creation date equals to 2023-06-02. You have to treat date as string")
 
-pretty_print_docs(docs)
+#pretty_print_docs(docs)
+
+#mygpt.SummarizeContent()

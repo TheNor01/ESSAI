@@ -1,11 +1,13 @@
 
+
+"""
 from ast import Str
 from loaders.DIRLoader import DIRLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 def InitChromaDocsFromPath(path):
-    loader = DIRLoader(path,metadata_columns=["user","category","created_at"],content_column="content")
+    loader = DIRLoader(path,metadata_columns=["user","category","created_at_year","created_at_month","created_at_day"],content_column="content")
     docs = loader.load()
 
     #print(docs[0])
@@ -34,7 +36,7 @@ def InitChromaDocsFromPath(path):
 
 
 def ProcessChunksFromLocal(path):
-    loader = DIRLoader(path,metadata_columns=["user","category","created_at"],content_column="content")
+    loader = DIRLoader(path,metadata_columns=["user","category","created_at_year","created_at_month","created_at_day"],content_column="content")
     docs = loader.load()
 
     #print(docs[0])
@@ -51,3 +53,5 @@ def ProcessChunksFromLocal(path):
     all_splits = text_splitter.split_documents(docs)
 
     return all_splits
+
+"""

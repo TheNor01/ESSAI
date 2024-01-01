@@ -42,7 +42,8 @@ class ScrapingHTML:
 #----------------------------------------------------------
     def StartRequest(self,links):  
         self.headers = self.__headersObj.setHeader()  #Setta l'Header
-        self.GetText(links)
+        output = self.GetText(links)
+        return output
 #----------------------------------------------------------
     def ApplyFiltro(self,text):  #Regex per eliminare spazzatura
         if len(text) >=35:
@@ -210,13 +211,12 @@ class ScrapingHTML:
             for tag in tags:
                 content=tag.get_text().strip()
                 if( self.ApplyFiltro(content)==True ):  ##prendo il P
-                    print("CONTENT= ",content)
+                    #print("CONTENT= ",content)
                     s = s + content
                     linesCounter=linesCounter+1
 
             local_str = local_str + s
 
-            print(local_str)
 
             #discard if: file is empty; file size is over 20kb; file contains more than 100 lines; file don't contains text
             """

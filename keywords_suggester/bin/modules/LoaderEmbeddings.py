@@ -17,7 +17,7 @@ def SpliText():
     return textSplitter
 
 def InitChromaDocsFromPath(path):
-    loader = DIRLoader(path,metadata_columns=["user","category","created_at"],content_column="content")
+    loader = DIRLoader(path,metadata_columns=["user","category","created_at_year","created_at_month","created_at_day"],content_column="content")
     docs = loader.load()
 
     text_splitter = SpliText()
@@ -34,7 +34,7 @@ def InitChromaDocsFromPath(path):
 
 
 def ProcessChunksFromLocal(path):
-    loader = DIRLoader(path,metadata_columns=["user","category","created_at"],content_column="content")
+    loader = DIRLoader(path,metadata_columns=["user","category","created_at_year","created_at_month","created_at_day"],content_column="content")
     docs = loader.load()
 
 

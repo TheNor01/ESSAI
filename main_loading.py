@@ -37,12 +37,12 @@ if __name__ == '__main__':
     # getting the timestamp
     ts = datetime.timestamp(dt)
 
-    source_directory = settings.source_directory+"init_dataset"
+    source_directory = settings.source_directory+settings.init_dataset
 
     basenameDataset = source_directory.split("/")[-1]
     print(basenameDataset)
     destination_directory = "keywords_suggester/dataset_transformed/"+basenameDataset+"_"+str(ts)
-    custom_headers = ["content", "user","category","created_at"]
+    custom_headers = ["content", "user","category","created_at_year","created_at_month","created_at_day"]
 
     if(PREPROCESS==1):
         if os.path.isdir(source_directory):

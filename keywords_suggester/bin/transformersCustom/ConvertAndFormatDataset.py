@@ -14,8 +14,10 @@ def build_dataframe_from_csv_uploaded(BERT_MODEL,SELECTED_UPLOAD):
     dict_topic_name = dict(zip(topic_info['Topic'], topic_info['Name']))
 
     documents_list,topics_list,users_list,ids_list = [],[],[],[]
-    CREATED_TIME_NOW =  datetime.now().strftime("%Y-%m-%d")
-
+    created_at= datetime.now()
+    created_at_day = created_at.day
+    created_at_month = created_at.month
+    created_at_year = created_at.year
 
     USE_BERT = 1
     with open(os.path.join(settings.upload_directory,SELECTED_UPLOAD),encoding="utf-8") as file_obj: 
@@ -51,9 +53,10 @@ def build_dataframe_from_csv_uploaded(BERT_MODEL,SELECTED_UPLOAD):
                 topics_list.append(local_category)
 
     upload_df = pd.DataFrame(zip(documents_list, topics_list, users_list,ids_list),columns=['content','category', 'user','ids'])
-    upload_df['created_at']=CREATED_TIME_NOW
+    upload_df['created_at_year']=created_at_year
+    upload_df['created_at_month']=created_at_month
+    upload_df['created_at_day']=created_at_day
 
-    #TODO we can store DF into storage "name+processingDate"
 
     return upload_df
 
@@ -77,12 +80,16 @@ def convert_to_csv(input_file_path, output_file_path,headers):
         csv_writer.writerow(headers)
         folder_metadata = input_file_path.split('/')[-2] #TO FIX
 
-        created_at_string = datetime.now().strftime("%Y-%m-%d")
+        #TODO RENDERE YYYY metadata , MM metadata , D metadata
+        created_at= datetime.now()
+        created_at_day = created_at.day
+        created_at_month = created_at.month
+        created_at_year = created_at.year
 
         #truncate text to limit 
 
         user = uuid.uuid4().hex[:5] #TODO read it from files or another structure
-        data = [content.strip(),user,folder_metadata,created_at_string] #created at in order to delete FROM DB, cleaning action with delete
+        data = [content.strip(),user,folder_metadata,created_at_year,created_at_month,created_at_day] #created at in order to delete FROM DB, cleaning action with delete
         csv_writer.writerow(data)
 
 # Funzione per elaborare ricorsivamente una directory

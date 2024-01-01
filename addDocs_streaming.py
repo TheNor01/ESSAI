@@ -10,8 +10,8 @@ from langchain.schema import Document
 import pandas as pd
 import numpy as np
 from keywords_suggester.bin.modules.ScrapingSingle import ScrapingHTML
-
-
+import uuid
+import faust
 #print(langchain_chroma._persist_directory)
 
 """
@@ -22,6 +22,9 @@ from keywords_suggester.bin.modules.ScrapingSingle import ScrapingHTML
 
 """
 
+class Content(faust.Record):
+    user: str
+    content : str
 
 if __name__ == '__main__':
 
@@ -44,16 +47,33 @@ if __name__ == '__main__':
 
 
     Scraping = ScrapingHTML("2023-31-12","english")
-    links = ["https://www.ansa.it/sito/notizie/sport/2023/12/31/ciclismo-australia-rohan-dennis-arrestato-per-la-morte-della-moglie_f44d310f-1106-4921-840f-5007151e7472.html"]
-    content = Scraping.StartRequest(links)
 
-    print(content)
+    user = uuid.uuid4().hex[:5]
 
-
-
+    #links = ["https://www.ansa.it/sito/notizie/sport/2023/12/31/ciclismo-australia-rohan-dennis-arrestato-per-la-morte-della-moglie_f44d310f-1106-4921-840f-5007151e7472.html"]
+    #content = Scraping.StartRequest(links)
 
 
-    
+    #print(user)
+    #print(content)
+
+    #input.topic
+    #https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-windows/
+    #https://faust.readthedocs.io/en/latest/playbooks/quickstart.html
+    app = faust.App(settings.collection_name, 
+                    broker='kafka://localhost:9092', 
+                    #store='rocksdb://'
+                    store='memory://'                    
+                    )
+        
+    content_topic = app.topic('content',value_type=Content)
+
+    #content_views = app.Table('content_views', default=int)
+
+    @app.agent(content_topic)
+    async def greet(traffic):
+        async for content in traffic:
+            print(content)
 
     
 
