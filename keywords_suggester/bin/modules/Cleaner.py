@@ -22,9 +22,11 @@ def clean_text(text):
         pattern = re.compile('[{}]'.format(re.escape(characters)))
         return ' '.join(filter(None, [pattern.sub('', t) for t in tokens]))
 
+    """
     def stem_text(text, stemmer=default_stemmer):
         tokens = tokenize_text(text)
-        return ' '.join([stemmer.stem(t) for t in tokens])
+        return ' '.join([stemmer.stem(t) for t in tokens]
+    """
 
     def remove_stopwords(text, stop_words=default_stopwords):
         tokens = [w for w in tokenize_text(text) if w not in stop_words]
@@ -32,9 +34,9 @@ def clean_text(text):
 
     text = text.strip(' ') # strip whitespaces
     text = text.lower() # lowercase
-    text = stem_text(text) # stemming
+    #text = stem_text(text) # stemming
     text = remove_special_characters(text) # remove punctuation and symbols
-    text = remove_stopwords(text) # remove stopwords
+    #text = remove_stopwords(text) # remove stopwords
     #text.strip(' ') # strip whitespaces again?
 
     return text

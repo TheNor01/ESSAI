@@ -7,12 +7,15 @@ from langchain.llms import GPT4All
 from operator import itemgetter
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
+from langchain import hub
 from langchain_core.runnables import RunnablePassthrough
 from langchain.memory import ConversationBufferMemory
 from langchain_core.runnables import RunnableParallel,RunnableBranch
 from langchain.chains import RetrievalQA
 from langchain_core.pydantic_v1 import BaseModel
 from typing import Literal
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import LLMChainExtractor
 from langchain.output_parsers.openai_functions import PydanticAttrOutputFunctionsParser
 from langchain.utils.openai_functions import convert_pydantic_to_openai_function
 from operator import itemgetter
@@ -83,92 +86,86 @@ class LLModel():
                             ),
         ]
 
-        """
-        prompt = get_query_constructor_prompt(
-            self.document_content_description,
-            self.metadata_field_info,
-        )
-
-        print(prompt.format(query="{query}"))
-        """
-
-
         self.llm = GPT4All(
             model="./keywords_suggester/storage/llm/mistral-7b-openorca.Q4_0.gguf",
-            max_tokens=2048
+            max_tokens=4096
         )
 
-
-    def SelfQuery(self,query):
-
-        #https://python.langchain.com/docs/modules/data_connection/retrievers/self_query/#constructing-from-scratch-with-lcel
-
-        #https://python.langchain.com/docs/expression_language/cookbook/prompt_llm_parser
-        #https://python.langchain.com/docs/expression_language/cookbook/retrieval
-        #https://medium.com/@onkarmishra/using-langchain-for-question-answering-on-own-data-3af0a82789ed
-        #https://python.langchain.com/docs/use_cases/question_answering/
 
         chain = load_query_constructor_runnable(
                 self.llm, self.document_content_description, self.metadata_field_info
                 )
     
-        retriever = SelfQueryRetriever(
+        compressor = LLMChainExtractor.from_llm(self.llm)
+
+        self.retriever = SelfQueryRetriever(
             query_constructor=chain,
             vectorstore=self.chroma.CLIENT,
             structured_query_translator=ChromaTranslator(),
             verbose=True
         )
 
-        docs = retriever.invoke(query)
+        self.compression_retriever = ContextualCompressionRetriever(
+            base_compressor=compressor, base_retriever=self.retriever
+        )
+
+
+
+    def SelfQuery(self,query):
+
+        
+        pass
+        #docs = retriever.invoke(query)
         #docs = retriever.get_relevant_documents(query)
 
         #LIMIT https://github.com/langchain-ai/langchain/issues/13961
-        if(len(docs)==0):
-            print("NO DATA")
-        return docs
+        #if(len(docs)==0):
+        #    print("NO DATA")
+        #return docs
     
-    """
-    def ContextQuestionQuery(self,query):
+    #Used to QA special documents, such as user profile in order to retriver answer according to a question
+    def RagQA(self,question):
 
-        template = "Answer the question based only on the following context:
-                    {context}
 
-                    Question: {question}
-                    "
-    
-        prompt = ChatPromptTemplate.from_template(template)
+        # Build prompt
+        prompt = hub.pull("rlm/rag-prompt")
+        #SummarizePrompt = PromptTemplate.from_template("Summarize this content:\n\n{context}")
 
-        chain = (
-             {"context": self.chroma.CLIENT.as_retriever() ,"question": RunnablePassthrough()}
+
+        #BUILD SELF RETRIVER
+        retriever = self.compression_retriever
+               
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
+
+        rag_chain_from_docs = (
+            RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
             | prompt
             | self.llm
             | StrOutputParser()
         )
 
-        retriever = SelfQueryRetriever(
-            query_constructor=self.query_constructor,
-            vectorstore=self.chroma.CLIENT,
-            structured_query_translator=ChromaTranslator(),
-        )   
+        rag_chain_with_source = RunnableParallel(
+            {"context": retriever, "question": RunnablePassthrough()}
+        ).assign(answer=rag_chain_from_docs)
+        
+        output = rag_chain_with_source.invoke(question)
 
-        docs = retriever.invoke(query)
-        return docs
-    """
-    
-    #
-    def RagChainWithSource(self,question):
-        # Build prompt
-        template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
-        {context}
-        Question: {question}
-        Helpful Answer:"""
-        QA_CHAIN_PROMPT = PromptTemplate.from_template(template)# Run chain
+        if(len(output)):
+            print('NO DATA')
+            return
+
+        return output
+
+
+        """
         qa_chain = RetrievalQA.from_chain_type(
             self.llm,
-            retriever=self.chroma.CLIENT.as_retriever(),
+            #retriever=self.chroma.CLIENT.as_retriever(search_kwargs={"filter": {"user":'dc16c'}}
+            retriever = retriever,
             return_source_documents=True,
-            chain_type_kwargs={"prompt": QA_CHAIN_PROMPT},
-            
+            chain_type="map-reduce",
+            chain_type_kwargs={"prompt": prompt},
         )
 
         #stuff as default https://python.langchain.com/docs/modules/chains/document/stuff
@@ -179,8 +176,9 @@ class LLModel():
         print(result["result"])
         # Check the source document from where we 
         print(result["source_documents"][0])
+        """
         
-    #Come usare? Oppure https://python.langchain.com/docs/expression_language/cookbook/embedding_router
+    #Come usare? Oppure https://python.langchain.com/docs/expression_language/cookbook/embedding_router --> prendere dai topic?
     def RouterPrompt(self,question):
         physics_template = """You are a very smart physics professor. \
         You are great at answering questions about physics in a concise and easy to understand manner. \
@@ -242,37 +240,22 @@ class LLModel():
         print(out)
 
 
-    def SummarizeContent(self):
-        doc_prompt = PromptTemplate.from_template("{page_content}")
-
-        chain = (
-            {
-                "content": lambda docs: "\n\n".join(
-                    format_document(doc, doc_prompt) for doc in docs
-                )
-            }
-            | PromptTemplate.from_template("Summarize the following content:\n\n{content}")
-            | self.llm
-            | StrOutputParser()
+    def SummarizeContent(self,question): #summerize documents - map reduce in order to fill context
+        prompt = PromptTemplate.from_template(
+         "Summarize the main themes in these retrieved docs: {docs}"
         )
 
-        text = """The large earthquake struck just off the Noto Peninsula at a little after 4pm local time.
-                It was very shallow, and the shaking was very severe, bringing down buildings in towns and villages along the coast.
-                For several hours after the quake struck, authorities said the Sea of Japan coast could be hit by tsunamis of up to five metres.
-                Tens of thousands of people were told to leave their homes and head for higher ground.
-                It immediately brought back memories March 2011 when a 15m tsunami inflicted massive destruction along Japan’s north-east coast, killing nearly 20,000 people.
-                The threat of a major tsunami has now passed, and the severe tsunami warning that was issued for much of the north-west coast has now been downgraded. But the damage is still severe.
-                Older houses have been brought down, roads torn up, bridges and railways severely damaged.
-                Some people are reported trapped under collapsed buildings and hospitals are reporting many injured."""
 
-        docs = [
-            Document(
-                page_content=split,
-                metadata={"source": "https://www.bbc.com/news/live/world-asia-67856144"},
-            )
-            for split in text.split()
-        ]
+        # Chain
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
 
-        print(chain.invoke(docs))
 
-        #then pass it to Router?
+        chain = {"docs": format_docs} | prompt | self.llm | StrOutputParser()
+
+        # Run
+        question = question
+        docs = self.chroma.CLIENT.similarity_search(question)
+        output = chain.invoke(docs)
+
+        print(output)

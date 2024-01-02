@@ -38,9 +38,15 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 mygpt = LLModel(ChromaDB)
 
 #docs = mygpt.SelfQuery("what food is healthy? Return more than 10 results")
-docs = mygpt.SelfQuery("What are food documents created in year 2024")
+#docs = mygpt.SelfQuery("Give me some food documents created in year 2024")
+#docs = mygpt.SelfQuery("Based on his documents, create a sample text for the user dc16c")
+#docs = mygpt.SelfQuery("What are some documents about food which contains the word chicken")
 #docs = mygpt.StructuredQuery("give me sports documents with creation date equals to 2023-06-02. You have to treat date as string")
 
-#pretty_print_docs(docs)
+docs = mygpt.RagQA("What food is healthy?")
+
+pretty_print_docs(docs)
+
+
 
 #mygpt.SummarizeContent()
