@@ -30,6 +30,7 @@ from langchain.chains.query_constructor.base import (
     load_query_constructor_runnable
 )
 
+
 #https://maartengr.github.io/BERTopic/api/representation/langchain.html#bertopic.representation._langchain.LangChain
 
 def singleton(cls):
@@ -106,7 +107,7 @@ class LLModel():
         )
 
         self.compression_retriever = ContextualCompressionRetriever(
-            base_compressor=compressor, base_retriever=self.retriever
+            base_compressor=compressor, base_retriever=self.chroma.CLIENT.as_retriever()
         )
 
 
@@ -133,27 +134,39 @@ class LLModel():
 
 
         #BUILD SELF RETRIVER
-        retriever = self.compression_retriever
+        retriever = self.chroma.CLIENT.as_retriever()
+        #retriever = self.compression_retriever
                
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
 
-        rag_chain_from_docs = (
-            RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
+        qa_chain = (
+            {"context": retriever | format_docs, "question": RunnablePassthrough()}
             | prompt
             | self.llm
             | StrOutputParser()
         )
+        
+        rag_chain_from_docs = (
+                RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
+                | prompt
+                | self.llm
+                | StrOutputParser()
+            )
 
         rag_chain_with_source = RunnableParallel(
             {"context": retriever, "question": RunnablePassthrough()}
         ).assign(answer=rag_chain_from_docs)
-        
-        output = rag_chain_with_source.invoke(question)
 
-        if(len(output)):
+
+        #output = qa_chain.invoke(question)
+        output = rag_chain_with_source.invoke(question)
+        
+        print(type(output))
+
+        if(len(output)==0):
             print('NO DATA')
-            return
+            exit()
 
         return output
 

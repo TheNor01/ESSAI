@@ -24,7 +24,14 @@ import logging
 logging.basicConfig(level = logging.INFO)
 
 def pretty_print_docs(docs):
-    print(f"\n{'-' * 100}\n".join([f"Document {i+1}:\n\n" + d.page_content + "Metadata:" + str(d.metadata) for i, d in enumerate(docs)]))
+    if(isinstance(docs,str)):
+        print(docs)
+    if(isinstance(docs,dict)):
+        for i in docs:
+            print (i, docs[i])
+    else:
+        #print(docs)
+        print(f"\n{'-' * 100}\n".join([f"Document {i+1}:\n\n" + d.page_content + "Metadata:" + str(d.metadata) for i, d in enumerate(docs)]))
 
 
 # Run
@@ -43,7 +50,11 @@ mygpt = LLModel(ChromaDB)
 #docs = mygpt.SelfQuery("What are some documents about food which contains the word chicken")
 #docs = mygpt.StructuredQuery("give me sports documents with creation date equals to 2023-06-02. You have to treat date as string")
 
-docs = mygpt.RagQA("What food is healthy?")
+#docs = mygpt.retriever.invoke("What documents of category automotive contains road")
+#pretty_print_docs(docs)
+
+
+docs = mygpt.RagQA("Could you provide a list of 5 healthy food?")
 
 pretty_print_docs(docs)
 
