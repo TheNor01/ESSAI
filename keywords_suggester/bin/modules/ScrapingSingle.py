@@ -5,6 +5,7 @@ from keywords_suggester.bin.classi.ChangeHeaders import Headers
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
@@ -33,7 +34,9 @@ class ScrapingHTML:
         self.headers=None
         self.date = today_date
         self.lang = language
-        self.browser = webdriver.Firefox()
+        options = FirefoxOptions()
+        options.add_argument("--headless")
+        self.browser = webdriver.Firefox(options=options)
         self.maxTimeoutScraping = 30
         #self.News = GoogleScraping(period) passato tramite parametri
         if language=="english":
@@ -167,7 +170,7 @@ class ScrapingHTML:
                 return None
 
 #----------------------------------------------------------
-    def GetText(self,links):
+    def GetText(self,links) -> str:
         for index in range(len(links)):
             print("----------------------------------------------------------------")
 
