@@ -10,11 +10,6 @@
 
 #serve il self query
 
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chains import LLMChain
-from langchain.llms import GPT4All
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
 from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 from keywords_suggester.bin.modules.LLModel import LLModel
 from keywords_suggester.config import settings
@@ -44,18 +39,19 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 mygpt = LLModel(ChromaDB)
 
-#docs = mygpt.SelfQuery("what food is healthy? Return more than 10 results")
+#docs = mygpt.SelfQuery("I want to know what article user 4a2bd reads")
 #docs = mygpt.SelfQuery("Give me some food documents created in year 2024")
 #docs = mygpt.SelfQuery("Based on his documents, create a sample text for the user dc16c")
 #docs = mygpt.SelfQuery("What are some documents about food which contains the word chicken")
 #docs = mygpt.StructuredQuery("give me sports documents with creation date equals to 2023-06-02. You have to treat date as string")
 
-#docs = mygpt.retriever.invoke("What documents of category automotive contains road")
+#docs = mygpt.retriever.invoke("I want to know what article user 4a2bd reads")
 #pretty_print_docs(docs)
 
 
-docs = mygpt.RagQA("Could you provide a list of 5 healthy food?")
+#docs = mygpt.RagQA("Tell me something about volkswagen")
 
+docs = mygpt.SummarizeContent()
 pretty_print_docs(docs)
 
 

@@ -132,10 +132,10 @@ class LLModel():
         prompt = hub.pull("rlm/rag-prompt")
         #SummarizePrompt = PromptTemplate.from_template("Summarize this content:\n\n{context}")
 
-
+        
         #BUILD SELF RETRIVER
-        retriever = self.chroma.CLIENT.as_retriever()
-        #retriever = self.compression_retriever
+        #retriever = self.chroma.CLIENT.as_retriever()
+        retriever = self.compression_retriever
                
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
