@@ -29,10 +29,9 @@ def singleton(cls):
 @singleton
 class ScrapingHTML:
     
-    def __init__(self,today_date,language):
+    def __init__(self,language):
         self.__headersObj = Headers()
         self.headers=None
-        self.date = today_date
         self.lang = language
         options = FirefoxOptions()
         options.add_argument("--headless")

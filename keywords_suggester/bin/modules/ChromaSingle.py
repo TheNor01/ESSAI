@@ -119,6 +119,11 @@ class ChromaClass:
         #ids_added = self.CLIENT.add_documents(documents) #automatic persist IS DONE HERE
         #print("TOTAL IDS ADDED: -> "+str(len(ids_added)))
         
+        info = self.indexer.IndexIncremental(documents)
+        
+        print("TOTAL IDS ADDED: -> "+str((info["num_added"])))
+        print("TOTAL IDS UPDATED: -> "+str((info["num_updated"])))
+        print("TOTAL IDS DELETED: -> "+str((info["num_deleted"])))
     
         print("TOTAL COLLECTION: -->"+ str(self.CLIENT._collection.count()))
         pass

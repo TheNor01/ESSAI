@@ -7,6 +7,7 @@ import uuid
 
 class Content(faust.Record):
     url: str
+    
 
 app = faust.App(
     'content-app',
@@ -17,7 +18,7 @@ content_topic = app.topic('content')
 
 
 
-Scraping = ScrapingHTML("2023-31-12","english")
+Scraping = ScrapingHTML("english")
 
 @app.agent(content_topic)
 async def crawler(content_traffic):
@@ -26,7 +27,6 @@ async def crawler(content_traffic):
         print(Content.url)
         decoded_url= Content.url
         #print(decoded_url)
-        user = uuid.uuid4().hex[:5]
         links = [decoded_url]
         content = Scraping.StartRequest(links)
         yield content
