@@ -1,15 +1,14 @@
 from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
 from keywords_suggester.bin.modules.LLModel import LLModel
 from keywords_suggester.config import settings
-from chainlit import user_session
 from chainlit import on_message, on_chat_start
 import chainlit as cl
-from keywords_suggester.bin.prompts.prompts import load_query_gen_prompt,load_spark_prompt
+from keywords_suggester.bin.prompts.prompts import load_query_gen_prompt,load_essai_prompt
 from langchain.prompts.prompt import PromptTemplate
-from langchain.callbacks import ContextCallbackHandler
 from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+
 from langchain.prompts import (
     ChatPromptTemplate,
     PromptTemplate,
@@ -29,7 +28,7 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 mygpt = LLModel(ChromaDB)
 
-spark = load_spark_prompt()
+essai_prompt = load_essai_prompt()
 query_gen_prompt = load_query_gen_prompt()
 CONDENSE_QUESTION_PROMPT = PromptTemplate.from_template(query_gen_prompt)
 
@@ -39,12 +38,10 @@ def init():
     memory = ConversationTokenBufferMemory(llm=llm,memory_key="chat_history", return_messages=True,input_key='question',max_token_limit=1000)
     
     docsearch = ChromaDB.CLIENT
-    retriever = docsearch.as_retriever(search_kwargs={"k": 10})
-    # compressor = CohereRerank()
-    # reranker = ContextualCompressionRetriever(
-    #     base_compressor=compressor, base_retriever=retriever
-    # )
-    messages = [SystemMessagePromptTemplate.from_template(spark)]
+    #retriever = docsearch.as_retriever(search_kwargs={"k": 10})
+    retriever = mygpt.retriever
+
+    messages = [SystemMessagePromptTemplate.from_template(essai_prompt)]
     # print('mem', user_session.get('memory'))
     messages.append(HumanMessagePromptTemplate.from_template("{question}"))
     prompt = ChatPromptTemplate.from_messages(messages)
@@ -71,5 +68,6 @@ async def main(message: str):
         # Run the chain asynchronously with an async callback
         res = await chain.arun({"question": message.content},callbacks=[cl.AsyncLangchainCallbackHandler()])
 
+        print(res)
         # Send the answer and the text elements to the UI
         await cl.Message(content=res).send()

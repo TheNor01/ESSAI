@@ -8,18 +8,10 @@ from operator import itemgetter
 from langchain.prompts import PromptTemplate
 from langchain.schema import Document
 from langchain import hub
-from langchain_core.runnables import RunnablePassthrough
-from langchain.memory import ConversationBufferMemory
-from langchain_core.runnables import RunnableParallel,RunnableBranch
-from langchain.chains import RetrievalQA
-from langchain_core.pydantic_v1 import BaseModel
-from typing import Literal
+from langchain_core.runnables import RunnablePassthrough,RunnableParallel,RunnableBranch
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
-from langchain.output_parsers.openai_functions import PydanticAttrOutputFunctionsParser
-from langchain.utils.openai_functions import convert_pydantic_to_openai_function
 from operator import itemgetter
-from langchain_core.prompts import format_document
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -110,19 +102,6 @@ class LLModel():
             base_compressor=compressor, base_retriever=self.chroma.CLIENT.as_retriever()
         )
 
-
-
-    def SelfQuery(self,query):
-
-        
-        pass
-        #docs = retriever.invoke(query)
-        #docs = retriever.get_relevant_documents(query)
-
-        #LIMIT https://github.com/langchain-ai/langchain/issues/13961
-        #if(len(docs)==0):
-        #    print("NO DATA")
-        #return docs
     
     #Used to QA special documents, such as user profile in order to retriver answer according to a question
     def RagQA(self,question):
@@ -139,13 +118,6 @@ class LLModel():
                
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
-
-        qa_chain = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough()}
-            | prompt
-            | self.llm
-            | StrOutputParser()
-        )
         
         rag_chain_from_docs = (
                 RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
@@ -169,88 +141,6 @@ class LLModel():
             exit()
 
         return output
-
-
-        """
-        qa_chain = RetrievalQA.from_chain_type(
-            self.llm,
-            #retriever=self.chroma.CLIENT.as_retriever(search_kwargs={"filter": {"user":'dc16c'}}
-            retriever = retriever,
-            return_source_documents=True,
-            chain_type="map-reduce",
-            chain_type_kwargs={"prompt": prompt},
-        )
-
-        #stuff as default https://python.langchain.com/docs/modules/chains/document/stuff
-
-        question = question
-        result = qa_chain({"query": question})
-        # Check the result of the query
-        print(result["result"])
-        # Check the source document from where we 
-        print(result["source_documents"][0])
-        """
-        
-    #Come usare? Oppure https://python.langchain.com/docs/expression_language/cookbook/embedding_router --> prendere dai topic?
-    def RouterPrompt(self,question):
-        physics_template = """You are a very smart physics professor. \
-        You are great at answering questions about physics in a concise and easy to understand manner. \
-        When you don't know the answer to a question you admit that you don't know.
-
-        Here is a question:
-        {input}"""
-        physics_prompt = PromptTemplate.from_template(physics_template)
-
-        math_template = """You are a very good mathematician. You are great at answering math questions. \
-        You are so good because you are able to break down hard problems into their component parts, \
-        answer the component parts, and then put them together to answer the broader question.
-
-        Here is a question:
-        {input}"""
-        
-        math_prompt = PromptTemplate.from_template(math_template)
-        general_prompt = PromptTemplate.from_template(
-            "You are a helpful assistant. Answer the question as accurately as you can.\n\n{input}"
-        )
-
-        prompt_branch = RunnableBranch(
-            (lambda x: x["topic"] == "math", math_prompt),
-            (lambda x: x["topic"] == "physics", physics_prompt),
-            general_prompt,
-        )
-
-
-        class TopicClassifier(BaseModel):
-            "Classify the topic of the user question"
-
-            topic: Literal["math", "physics", "general"]
-            "The topic of the user question. One of 'math', 'physics' or 'general'."
-
-        classifier_function = convert_pydantic_to_openai_function(TopicClassifier)
-
-        llm =  self.llm.bind(
-                functions=[classifier_function], function_call={"name": "TopicClassifier"}
-                )
-        parser = PydanticAttrOutputFunctionsParser(
-            pydantic_schema=TopicClassifier, attr_name="topic"
-        )
-
-        classifier_chain = llm | parser
-
-        final_chain = (
-            RunnablePassthrough.assign(topic=itemgetter("input") | classifier_chain)
-            | prompt_branch
-            | self.llm()
-            | StrOutputParser()
-        )
-
-        out = final_chain.invoke(
-            {
-                "input":  question
-            }
-        )
-
-        print(out)
 
 
     def SummarizeContent(self,question): #summerize documents - map reduce in order to fill context
