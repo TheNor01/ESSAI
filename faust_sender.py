@@ -16,6 +16,9 @@ from keywords_suggester.bin.modules.LoaderEmbeddings import SpliText
 #docker-compose -f zk-single-kafka-single.yml ps
 
 # ==== INIT  SECTION =====
+
+domain = "https://www.ansa.it/"
+
 user = uuid.uuid4().hex[:5]
 settings.init()
 persist_directory = settings.persist_directory+settings.init_dataset+"/"
@@ -51,7 +54,7 @@ class EventListeners(AbstractEventListener):
 d = EventFiringWebDriver(b,EventListeners())
 
 queue = Queue()
-d.get('https://www.ansa.it')
+d.get(domain)
 d.implicitly_wait(20)
 d.back()
 
@@ -61,7 +64,7 @@ d.back()
 async def send_value(visited_url) -> None:
     content = await crawler.ask(Content(url=visited_url))
     
-    print("CONTENT: ",content)
+    print("CONTENT: ",content[0:50])
     
     created_at =  datetime.now()
     created_at_day = created_at.day
@@ -96,21 +99,16 @@ def on_click(x, y, button, pressed):
     if pressed:
         print('Mouse clicked')
         time.sleep(2)
-        #print("Navigation to: %s " % b.current_url)
         queue.put(b.current_url)
         
-
-
 if __name__ == '__main__':
-    #with Listener(on_click=on_click) as listener:
-    #    listener.start()
         
     listener = Listener(on_click=on_click)
     listener.start()
 
     while True:
         urls = queue.get()
-        if(urls != "https://www.ansa.it"):
+        if(urls != domain):
             print("Navigation to: %s " % urls)
 
             loop = asyncio.get_event_loop()
