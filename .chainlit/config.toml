@@ -6,7 +6,7 @@ enable_telemetry = true
 user_env = []
 
 # Duration (in seconds) during which the session is saved when the connection is lost
-session_timeout = 3600
+session_timeout = 7200
 
 # Enable third parties caching (e.g LangChain cache)
 cache = false
@@ -35,7 +35,7 @@ multi_modal = true
 
 [UI]
 # Name of the app and chatbot.
-name = "Chatbot"
+name = "ESSAI"
 
 # Show the readme while the conversation is empty.
 show_readme_as_default = true

@@ -9,6 +9,7 @@ from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.memory import ConversationTokenBufferMemory
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
+
 from langchain.prompts import (
     ChatPromptTemplate,
     PromptTemplate,
@@ -16,6 +17,8 @@ from langchain.prompts import (
     HumanMessagePromptTemplate,
 )
 import logging
+
+#https://docs.chainlit.io/integrations/langchain
 
 logging.basicConfig(level = logging.INFO)
 

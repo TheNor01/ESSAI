@@ -16,18 +16,13 @@ def load_essai_prompt():
     ESSAI stands for Easy semantic search articial intelligence
     
     Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise
-    The sources above are NOT related to the conversation with the user. Ignore the sources if user is engaging in small talk.
-    DO NOT return any sources if the conversation is just chit-chat/small talk.
+    The sources above are NOT related to the conversation with the user.
 
     Question: {question}
-    Source:
+    Context:
     ---------------------
-        {summaries}
+        {context}
     ---------------------
-
-    The sources above are NOT related to the conversation with the user. Ignore the sources if user is engaging in small talk.
-    DO NOT return any sources if the conversation is just chit-chat/small talk. Return ALL the source URLs if conversation is not small talk.
-
     Chat History:
     {chat_history}
     """

@@ -102,6 +102,30 @@ class LLModel():
             base_compressor=compressor, base_retriever=self.chroma.CLIENT.as_retriever()
         )
 
+        self.prompt=hub.pull("rlm/rag-prompt")
+
+        def format_docs(docs):
+            return "\n\n".join(doc.page_content for doc in docs)
+        
+        rag_chain_from_docs = (
+                RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
+                | self.prompt
+                | self.llm
+                | StrOutputParser()
+            )
+
+        self.rag_chain_with_source = RunnableParallel(
+            {"context": self.retriever, "question": RunnablePassthrough()}
+        ).assign(answer=rag_chain_from_docs)
+
+
+        self.runnable = (
+        {"context": self.retriever | format_docs, "question": RunnablePassthrough()}
+        | self.prompt
+        | self.llm
+        | StrOutputParser()
+        )
+
     
     #Used to QA special documents, such as user profile in order to retriver answer according to a question
     def RagQA(self,question):
@@ -116,23 +140,8 @@ class LLModel():
         #retriever = self.chroma.CLIENT.as_retriever()
         retriever = self.compression_retriever
                
-        def format_docs(docs):
-            return "\n\n".join(doc.page_content for doc in docs)
-        
-        rag_chain_from_docs = (
-                RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
-                | prompt
-                | self.llm
-                | StrOutputParser()
-            )
-
-        rag_chain_with_source = RunnableParallel(
-            {"context": retriever, "question": RunnablePassthrough()}
-        ).assign(answer=rag_chain_from_docs)
-
-
         #output = qa_chain.invoke(question)
-        output = rag_chain_with_source.invoke(question)
+        output = self.rag_chain_with_source.invoke(question)
         
         print(type(output))
 
