@@ -1,8 +1,8 @@
 
 from pydoc import doc
-from keywords_suggester.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
-from keywords_suggester.config import settings
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+from essai.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
+from essai.config import settings
+from essai.bin.modules.ChromaSingle import ChromaClass
 
 
 

@@ -1,8 +1,8 @@
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.indexes import SQLRecordManager, index
 from langchain.schema import Document
-from keywords_suggester.config import settings
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+from essai.config import settings
+from essai.bin.modules.ChromaSingle import ChromaClass
 
 
 #https://python.langchain.com/docs/modules/data_connection/indexing

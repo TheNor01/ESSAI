@@ -1,11 +1,11 @@
 from langchain.vectorstores import Chroma
 from langchain.embeddings import HuggingFaceEmbeddings
-from keywords_suggester.bin.modules.LoaderEmbeddings import InitChromaDocsFromPath
+from essai.bin.modules.LoaderEmbeddings import InitChromaDocsFromPath
 import os
-from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import process_directory
+from essai.bin.transformersCustom.ConvertAndFormatDataset import process_directory
 import chromadb
 from datetime import datetime
-from keywords_suggester.config import settings
+from essai.config import settings
 from tqdm import tqdm
 from langchain.indexes import SQLRecordManager, index
 from chromadb.config import Settings
@@ -27,7 +27,7 @@ if __name__ == '__main__':
 
     settings.init()
 
-    collection_name_local = "default"
+    collection_name_local = settings.collection_name
 
     LOAD_DOCS = 1
     PREPROCESS = 1

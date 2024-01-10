@@ -6,12 +6,12 @@ from pynput.mouse import Listener
 import time
 from queue import Queue
 import uuid
-from keywords_suggester.config import settings
-from keywords_suggester.bin.modules.BertSingle import BertTopicClass
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+from essai.config import settings
+from essai.bin.modules.BertSingle import BertTopicClass
+from essai.bin.modules.ChromaSingle import ChromaClass
 from langchain.schema import Document
 from datetime import datetime
-from keywords_suggester.bin.modules.LoaderEmbeddings import SpliText
+from essai.bin.modules.LoaderEmbeddings import SpliText
 #docker-compose -f zk-single-kafka-single.yml up -d
 #docker-compose -f zk-single-kafka-single.yml ps
 

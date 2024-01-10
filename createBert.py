@@ -2,14 +2,14 @@
 import numpy as np
 from sklearn.datasets import fetch_20newsgroups
 #from datasets import load_dataset
-from keywords_suggester.config import settings
+from essai.config import settings
 
 
 from sentence_transformers import SentenceTransformer
 from sklearn.feature_extraction.text import CountVectorizer
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
-from keywords_suggester.bin.modules.BertSingle import BertTopicClass
-from keywords_suggester.config import settings
+from essai.bin.modules.ChromaSingle import ChromaClass
+from essai.bin.modules.BertSingle import BertTopicClass
+from essai.config import settings
 
 if __name__ == "__main__":
 

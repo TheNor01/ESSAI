@@ -1,17 +1,17 @@
 
 from datetime import datetime
 from pydoc import doc
-from keywords_suggester.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
-from keywords_suggester.config import settings
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
+from essai.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
+from essai.config import settings
+from essai.bin.modules.ChromaSingle import ChromaClass
 import os
-from keywords_suggester.bin.modules.BertSingle import BertTopicClass
+from essai.bin.modules.BertSingle import BertTopicClass
 import csv
 from langchain.schema import Document
 import hashlib
 import pandas as pd
 import numpy as np
-from keywords_suggester.bin.transformersCustom.ConvertAndFormatDataset import build_dataframe_from_csv_uploaded,clean_text
+from essai.bin.transformersCustom.ConvertAndFormatDataset import build_dataframe_from_csv_uploaded,clean_text
 from langchain.document_loaders import UnstructuredURLLoader
 
 #print(langchain_chroma._persist_directory)

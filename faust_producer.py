@@ -1,5 +1,5 @@
 import faust
-from keywords_suggester.bin.modules.ScrapingSingle import ScrapingHTML
+from essai.bin.modules.ScrapingSingle import ScrapingHTML
 import uuid
 
 #docker-compose -f zk-single-kafka-single.yml up -d

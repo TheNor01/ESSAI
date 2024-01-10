@@ -1,11 +1,11 @@
 
-from keywords_suggester.bin.modules.BertSingle import BertTopicClass
-from keywords_suggester.config import settings
+from essai.bin.modules.BertSingle import BertTopicClass
+from essai.config import settings
 from sentence_transformers import SentenceTransformer
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
-from keywords_suggester.bin.modules.RetriverSingle import RetrieverSingle
+from essai.bin.modules.ChromaSingle import ChromaClass
+from essai.bin.modules.RetriverSingle import RetrieverSingle
 import pickle
-from keywords_suggester.bin.modules.LLModel import LLModel
+from essai.bin.modules.LLModel import LLModel
 
 settings.init()
 persist_directory = settings.persist_directory+"init_dataset"+"/"

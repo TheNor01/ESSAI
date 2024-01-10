@@ -1,9 +1,9 @@
-from keywords_suggester.bin.modules.ChromaSingle import ChromaClass
-from keywords_suggester.bin.modules.LLModel import LLModel
-from keywords_suggester.config import settings
+from essai.bin.modules.ChromaSingle import ChromaClass
+from essai.bin.modules.LLModel import LLModel
+from essai.config import settings
 from chainlit import on_message, on_chat_start
 import chainlit as cl
-from keywords_suggester.bin.prompts.prompts import load_query_gen_prompt,load_essai_prompt
+from essai.bin.prompts.prompts import load_query_gen_prompt,load_essai_prompt
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import ConversationalRetrievalChain, LLMChain
 from langchain.memory import ConversationTokenBufferMemory
