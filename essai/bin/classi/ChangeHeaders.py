@@ -2,7 +2,7 @@
 import random
 
 class Headers:
-    def __init__(self,data_file="./keywords_suggester/storage/headers/headers.txt"):
+    def __init__(self,data_file="./essai/storage/headers/headers.txt"):
         self.data_file=data_file
         self.file = None
 

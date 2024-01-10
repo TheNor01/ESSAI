@@ -45,7 +45,6 @@ if __name__ == "__main__":
         topics, prob = BERT.main_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
         
         BERT.PersistModel()
-        #BERT.save("./keywords_suggester/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
     else:
         print("RESTORING MODEL BERT ...")
         BERT = BertTopicClass(BERT_NAME,restore=1)

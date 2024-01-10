@@ -8,7 +8,7 @@ from langchain.llms import LlamaCpp
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.callbacks.manager import CallbackManager
 
-persist_directory = "keywords_suggester/index_storage_lang"
+persist_directory = "essai/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)

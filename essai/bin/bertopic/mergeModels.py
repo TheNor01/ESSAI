@@ -22,7 +22,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 if __name__ == "__main__":
 
     embeded_model = SentenceTransformer('all-mpnet-base-v2')
-    main_model = BERTopic.load("./keywords_suggester/models_checkpoint/bert", embedding_model=embeded_model)
+    main_model = BERTopic.load("./essai/models_checkpoint/bert", embedding_model=embeded_model)
 
 
     dataset = load_dataset("CShorten/ML-ArXiv-Papers")["train"]
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     #da lanciare settimana in settimana
 
-    persist_directory = "keywords_suggester/index_storage_lang"
+    persist_directory = "essai/index_storage_lang"
 
     embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
     vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
@@ -63,6 +63,6 @@ if __name__ == "__main__":
 
 
     topics, prob = merged_model.fit_transform(documents=computed_document)
-    merged_model.save("./keywords_suggester/models_checkpoint/bert_merged", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
+    merged_model.save("./essai/models_checkpoint/bert_merged", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
     # it should be main LOCATION
 

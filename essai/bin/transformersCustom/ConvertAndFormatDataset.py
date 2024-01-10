@@ -9,7 +9,7 @@ import pandas as pd
 import random
 
 
-user_data_file="./keywords_suggester/storage/users/population.txt"
+user_data_file="./essai/storage/users/population.txt"
 
 population = None
 with open(user_data_file, "r") as population:

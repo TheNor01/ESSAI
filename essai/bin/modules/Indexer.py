@@ -17,7 +17,7 @@ def singleton(cls):
 class Indexer():
     def __init__(self,collection_name,vectorstore):
         index_name_local = collection_name + "_index"
-        self.storagePath = "keywords_suggester/storage" + "/"
+        self.storagePath = "essai/storage" + "/"
         namespace = f"chromadb/{index_name_local}"
         print("CREATED INDEX NAMESPACE -> "+namespace)
         

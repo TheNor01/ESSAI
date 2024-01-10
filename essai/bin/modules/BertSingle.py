@@ -41,7 +41,7 @@ class BertTopicClass:
     def __init__(self,BERT_NAME,restore=0,nr_topics='auto'):
 
         settings.init()
-        self.storageModel = "keywords_suggester/models_checkpoint/bert"+"/"+BERT_NAME
+        self.storageModel = "essai/models_checkpoint/bert"+"/"+BERT_NAME
         self.embed_name = settings.embed_name
         self.embeded_model = settings.bert_embeded
 
@@ -122,10 +122,10 @@ class BertTopicClass:
 
     
     def __storeDocumentsPickle__(self,docs_to_save):
-        path="./keywords_suggester/storage/documents_sync"
+        path="./essai/storage/documents_sync"
         if(not os.path.exists(path)):
             os.makedirs(path)
-        with open('./keywords_suggester/storage/documents_sync/documents.pkl', 'wb') as f:
+        with open('./essai/storage/documents_sync/documents.pkl', 'wb') as f:
             pickle.dump(docs_to_save, f)
 
 
@@ -150,7 +150,7 @@ class BertTopicClass:
 
     def __loadDocumentsSync__(self):
         mynewlist=None
-        with open('./keywords_suggester/storage/documents_sync.pkl', 'rb') as f:  #TODO we should query collection documents
+        with open('./essai/storage/documents_sync.pkl', 'rb') as f:  #TODO we should query collection documents
             mynewlist = pickle.load(f)
 
         if(not mynewlist):

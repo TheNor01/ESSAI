@@ -10,7 +10,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 
 model_url = "https://huggingface.co/TheBloke/Llama-2-7B-chat-GGUF/resolve/main/llama-2-7b-chat.Q4_0.gguf"
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-persist_directory = "keywords_suggester/index_storage_lang"
+persist_directory = "essai/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 

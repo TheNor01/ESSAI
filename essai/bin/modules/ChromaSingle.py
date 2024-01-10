@@ -22,7 +22,7 @@ def singleton(cls):
 @singleton
 class ChromaClass:
     def __init__(self,persist_directory,embeding_model,collection_name):
-        self.storagePath = "keywords_suggester/storage" + "/"
+        self.storagePath = "essai/storage" + "/"
         self.persist_directory = persist_directory
         self.CHROMA_SETTINGS = Settings(self.persist_directory)
         self.persistent_client = chromadb.PersistentClient(path=self.persist_directory,settings=self.CHROMA_SETTINGS)

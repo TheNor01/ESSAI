@@ -19,7 +19,7 @@ from essai.bin.modules.BertSingle import BertTopicClass
 
 
 SAVE=0
-persist_directory = "keywords_suggester/index_storage_lang"
+persist_directory = "essai/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
@@ -71,9 +71,9 @@ main_model = BERTopic(
 if(SAVE==1):
     topic_model = BERTopic(embedding_model=embeded_model,verbose=True)
     topics, prob = topic_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
-    topic_model.save("./keywords_suggester/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
+    topic_model.save("./essai/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
 else:
-    topic_model = BERTopic.load("./keywords_suggester/models_checkpoint/bert", embedding_model=embeded_model)
+    topic_model = BERTopic.load("./essai/models_checkpoint/bert", embedding_model=embeded_model)
 
 similar_topics, similarity = topic_model.find_topics("food", top_n=5)
 
@@ -138,5 +138,5 @@ computed_document.extend(abstracts_1)
 
 
 topics, prob = merged_model.fit_transform(documents=computed_document)
-merged_model.save("./keywords_suggester/models_checkpoint/bert_merged", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
+merged_model.save("./essai/models_checkpoint/bert_merged", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
 

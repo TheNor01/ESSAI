@@ -1,7 +1,7 @@
 
 
 import sys
-sys.path.append('keywords_suggester/langchain')
+sys.path.append('essai/langchain')
 
 
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -21,11 +21,11 @@ from langchain.schema import Document
 from chromadb.config import Settings
 
 
-loader = DIRLoader('keywords_suggester/data_transformed/dataset/',metadata_columns=["user","category"],content_column="content")
+loader = DIRLoader('essai/data_transformed/dataset/',metadata_columns=["user","category"],content_column="content")
 docs = loader.load()
 
 
-persist_directory = "keywords_suggester/index_storage_lang"
+persist_directory = "essai/index_storage_lang"
 
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 #vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)
@@ -33,11 +33,11 @@ embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-
 
 #https://python.langchain.com/docs/modules/data_connection/retrievers/time_weighted_vectorstore
 
-persist_directory = "keywords_suggester/index_storage_lang"
+persist_directory = "essai/index_storage_lang"
 embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
 CHROMA_SETTINGS = Settings(
-        persist_directory="keywords_suggester/index_storage_lang"
+        persist_directory="essai/index_storage_lang"
 )
 
 #vectordb = Chroma(persist_directory=persist_directory, embedding_function=embed_model)

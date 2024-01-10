@@ -61,6 +61,6 @@ if __name__ == "__main__":
     if(SAVE==1):
         main_model = BERTopic(embedding_model=embeded_model,verbose=True)
         topics, prob = main_model.fit_transform(documents=computed_document,embeddings=computed_document_array)#,embeddings=computed_document_array)
-        main_model.save("./keywords_suggester/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
+        main_model.save("./essai/models_checkpoint/bert", serialization="pytorch", save_ctfidf=True, save_embedding_model=embeded_model)
     else:
-        main_model = BERTopic.load("./keywords_suggester/models_checkpoint/bert", embedding_model=embeded_model)
+        main_model = BERTopic.load("./essai/models_checkpoint/bert", embedding_model=embeded_model)

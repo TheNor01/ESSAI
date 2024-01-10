@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
     basenameDataset = source_directory.split("/")[-1]
     print(basenameDataset)
-    destination_directory = "keywords_suggester/dataset_transformed/"+basenameDataset+"_"+str(ts)
+    destination_directory = "essai/dataset_transformed/"+basenameDataset+"_"+str(ts)
     custom_headers = ["content", "user","category","created_at_year","created_at_month","created_at_day"]
 
     if(PREPROCESS==1):

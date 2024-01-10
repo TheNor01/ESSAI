@@ -80,7 +80,7 @@ class LLModel():
         ]
 
         self.llm = GPT4All(
-            model="./keywords_suggester/storage/llm/mistral-7b-openorca.Q4_0.gguf",
+            model="./essai/storage/llm/mistral-7b-openorca.Q4_0.gguf",
             max_tokens=4096
         )
 
