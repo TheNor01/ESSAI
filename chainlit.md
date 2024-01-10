@@ -4,7 +4,8 @@ Hi there, User! 👋 I'm ESSAI. I am excited to have you here.
 
 ## Useful Links 🔗
 
-- **Documentation:** Get started with our comprehensive [Chainlit Documentation](https://docs.chainlit.io) 📚
-- **Discord Community:** Join our friendly [Chainlit Discord](https://discord.gg/k73SQ3FyUh) to ask questions, share your projects, and connect with other developers! 💬
+- **Documentation Langchain:** Get started with our comprehensive [Langchain Documentation](https://python.langchain.com/docs/get_started/introduction) 📚
+- **Documentation Chainlit:** [Chainlit Documentation](https://docs.chainlit.io/get-started/overview) 📚
+- **Documentation ChromaDB:** [ChromaDB Documentation](https://docs.trychroma.com/) 📚
 
-We can't wait to see what you create with Chainlit! Happy coding! 💻😊
+Happy Chat! 💻😊
