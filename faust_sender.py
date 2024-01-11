@@ -1,17 +1,21 @@
 import asyncio
-from faust_producer import Content, crawler
-from selenium import webdriver
-from selenium.webdriver.support.events import EventFiringWebDriver, AbstractEventListener
-from pynput.mouse import Listener
 import time
-from queue import Queue
 import uuid
-from essai.config import settings
+from datetime import datetime
+from queue import Queue
+
+from langchain.schema import Document
+from pynput.mouse import Listener
+from selenium import webdriver
+from selenium.webdriver.support.events import (AbstractEventListener,
+                                               EventFiringWebDriver)
+
 from essai.bin.modules.BertSingle import BertTopicClass
 from essai.bin.modules.ChromaSingle import ChromaClass
-from langchain.schema import Document
-from datetime import datetime
 from essai.bin.modules.LoaderEmbeddings import SpliText
+from essai.config import settings
+from faust_producer import Content, crawler
+
 #docker-compose -f zk-single-kafka-single.yml up -d
 #docker-compose -f zk-single-kafka-single.yml ps
 

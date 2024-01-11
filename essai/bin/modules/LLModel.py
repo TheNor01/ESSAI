@@ -45,7 +45,7 @@ class LLModel():
         self.document_content_description = "A document article read by an user with his metadata section"
 
 
-        #TODO fix date filter created_at
+       
         self.metadata_field_info = [
                             AttributeInfo(
                                 name="created_at_year",

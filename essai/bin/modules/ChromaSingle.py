@@ -1,12 +1,9 @@
 from chromadb.config import Settings
 import chromadb
-from langchain.schema import Document
 from langchain.vectorstores import Chroma
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
 import os
 from essai.bin.modules.Indexer import Indexer
 import pandas as pd
-from matplotlib import pyplot as plt
 import plotly.express as px
 
 def singleton(cls):

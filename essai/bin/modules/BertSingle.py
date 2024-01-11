@@ -1,8 +1,6 @@
-from chromadb.config import Settings
 import chromadb
 import os
 import pickle
-import re
 import pandas as pd
 from umap import UMAP
 from hdbscan import HDBSCAN
@@ -10,7 +8,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from bertopic.vectorizers import ClassTfidfTransformer
 from essai.config import settings
 from bertopic import BERTopic
-from sentence_transformers import SentenceTransformer
 from bertopic.backend._utils import select_backend
 from datasets import load_dataset
 import traceback
@@ -18,9 +15,6 @@ from transformers import pipeline
 from bertopic.representation import MaximalMarginalRelevance
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
-from random import randrange
-from datetime import timedelta
-from datetime import datetime
 
 
 

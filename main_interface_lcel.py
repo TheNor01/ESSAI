@@ -1,23 +1,14 @@
-from essai.bin.modules.ChromaSingle import ChromaClass
-from essai.bin.modules.LLModel import LLModel
-from essai.config import settings
-from chainlit import on_message, on_chat_start
+import logging
+
 import chainlit as cl
-from essai.bin.prompts.prompts import load_query_gen_prompt,load_essai_prompt
+from chainlit import on_chat_start, on_message
 from langchain.prompts.prompt import PromptTemplate
-from langchain.chains import ConversationalRetrievalChain, LLMChain
-from langchain.memory import ConversationTokenBufferMemory
-from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.schema.runnable.config import RunnableConfig
 
-
-from langchain.prompts import (
-    ChatPromptTemplate,
-    PromptTemplate,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-import logging
+from essai.bin.modules.ChromaSingle import ChromaClass
+from essai.bin.modules.LLModel import LLModel
+from essai.bin.prompts.prompts import load_essai_prompt, load_query_gen_prompt
+from essai.config import settings
 
 #https://docs.chainlit.io/integrations/langchain
 

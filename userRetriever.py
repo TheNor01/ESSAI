@@ -1,6 +1,5 @@
 
 from pydoc import doc
-from essai.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
 from essai.config import settings
 from essai.bin.modules.ChromaSingle import ChromaClass
 

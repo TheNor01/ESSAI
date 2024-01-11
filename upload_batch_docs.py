@@ -1,20 +1,13 @@
 
-from datetime import datetime
 from pydoc import doc
-from essai.bin.modules.LoaderEmbeddings import ProcessChunksFromLocal
 from essai.config import settings
 from essai.bin.modules.ChromaSingle import ChromaClass
 import os
 from essai.bin.modules.BertSingle import BertTopicClass
-import csv
 from langchain.schema import Document
-import hashlib
 import pandas as pd
-import numpy as np
 from essai.bin.transformersCustom.ConvertAndFormatDataset import build_dataframe_from_csv_uploaded,clean_text
-from langchain.document_loaders import UnstructuredURLLoader
 
-#print(langchain_chroma._persist_directory)
 
 """
 
