@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
 
 
-    #TODO capire se conviene fare prima la preview e poi classificare o al contrario
+    #conviene fare prima la preview e poi classificare o al contrario
 
     settings.init()
     persist_directory = settings.persist_directory+settings.init_dataset+"/"
@@ -56,7 +56,6 @@ if __name__ == '__main__':
     BERT_NAME = settings.bert_name
     BERT = BertTopicClass(BERT_NAME,restore=1)
 
-    #TODO possiamo fare la preview con BERTOPIC prima di aggiungere effettivamente gli utenti alla collezione CHROMA
 
 
     df = pd.read_csv(os.path.join(settings.upload_directory,SELECTED_UPLOAD),delimiter="|")

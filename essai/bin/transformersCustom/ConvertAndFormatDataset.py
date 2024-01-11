@@ -94,7 +94,6 @@ def convert_to_csv(input_file_path, output_file_path,headers):
         created_at_month = created_at.month
         created_at_year = created_at.year
 
-        #user = uuid.uuid4().hex[:5] #TODO read it from files or another structure
         user = random.choice(population)
         data = [content.strip(),user,folder_metadata,created_at_year,created_at_month,created_at_day] #created at in order to delete FROM DB, cleaning action with delete
         csv_writer.writerow(data)

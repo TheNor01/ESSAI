@@ -50,7 +50,6 @@ class RetrieverSingle():
     
     def ComposedQuery(self,dictQuery):
 
-        #TODO provare mettendo prima    https://docs.trychroma.com/usage-guide#querying-a-collection
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
         #ChromaDB.CLIENT.get(where={"status": "read"}, where_document={"$contains": "affairs"})
         #ChromaDB.CLIENT.get(where_document={"$or": [{"$contains": "global affairs"}, {"$contains": "domestic policy"}]})

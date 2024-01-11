@@ -22,7 +22,6 @@ from random import randrange
 from datetime import timedelta
 from datetime import datetime
 
-#TODO https://maartengr.github.io/BERTopic/getting_started/topicsperclass/topicsperclass.html, https://maartengr.github.io/BERTopic/getting_started/distribution/distribution.html
 
 
 
@@ -48,7 +47,7 @@ class BertTopicClass:
         self.hdbscan_model = HDBSCAN(min_cluster_size=15, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
         self.vectorizer_model = CountVectorizer(stop_words="english", min_df=2,ngram_range=(1, 2)) # min_df changed to 1
         self.ctfidf_model = ClassTfidfTransformer(reduce_frequent_words=True)
-        self.umap_model = UMAP(n_neighbors=15, n_components=15, min_dist=0.1, metric='cosine', random_state=42) #TODO provare mathanan
+        self.umap_model = UMAP(n_neighbors=15, n_components=15, min_dist=0.1, metric='cosine', random_state=42)
 
         #NEW 
         self.nr_topics = nr_topics
@@ -56,9 +55,7 @@ class BertTopicClass:
         #NEW 
         self.representation_model = MaximalMarginalRelevance(diversity=0.6,top_n_words=15)
 
-        self.init_documents = [] #store as PICKLE? cause i have to restore them if reduce topics is called
-
-        #min samples 15  #min_cluster_size
+        self.init_documents = [] 
         self.main_model = None
         if(restore==0):
             self.main_model = BERTopic(
@@ -112,7 +109,7 @@ class BertTopicClass:
 
         
 
-    def UpdateDocuments(self,docs): #TODO aggiungere alla lista esistente quelli passati
+    def UpdateDocuments(self,docs): #TODO aggiungere alla lista esistente quelli passati nella creazione
         docs_to_save=None
         if(not self.init_documents):
             docs_to_save = self.init_documents 
@@ -130,13 +127,10 @@ class BertTopicClass:
 
 
     def GenereateTopicLabels(self):
-
-        #TODO spiegare
         topic_labels =  self.main_model.generate_topic_labels(nr_words=3,
                                                  topic_prefix=False,
                                                  word_length=10,
                                                  separator=", ")
-        print(topic_labels)
 
     def ChangeLabelMeaning(self,dictToChange:dict):
         #{1: "Space Travel", 7: "Religion"}
@@ -162,7 +156,6 @@ class BertTopicClass:
 
     def ReduceTopics(self,number_topics_to_obtain='auto'):
 
-        #AgglomerativeClustering choice
 
         mynewlist = self.__loadDocumentsSync__()
         
@@ -207,6 +200,9 @@ class BertTopicClass:
         plt.imshow(wc, interpolation="bilinear")
         plt.axis("off")
         plt.show()
+
+        plt.savefig("./templates/static/images/WC.png")
+        
 
     def GenerateTopicChart(self):
         self.main_model.visualize_barchart().show()
