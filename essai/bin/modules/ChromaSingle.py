@@ -49,14 +49,20 @@ class ChromaClass:
     def HistogramUsersTopics(self,target_user = None): #extract a histogram of all users with their main topic
         collection = self.CLIENT.get()
         metadata_collection = collection["metadatas"]
+
         user_list = []
         category_list = []
+        source_list=[]
         for element in metadata_collection:
              user_list.append(element["user"])
              category_list.append(element["category"])
+             try:
+                source_list.append(element["source"])
+             except:
+                source_list.append("None")
 
 
-        hist_df = pd.DataFrame(list(zip(user_list, category_list)),columns=['user','category'])
+        hist_df = pd.DataFrame(list(zip(user_list, category_list,source_list)),columns=['user','category','source'])
         #print(hist_df)
 
         #target_user = '95d12'
@@ -76,14 +82,14 @@ class ChromaClass:
         threshold_percentage = 5.0
         category_counts = hist_df['category'].value_counts()
 
-        hist_df['counts'] = hist_df.groupby(['category'])['user'].transform('count')
+        hist_df['counts'] = hist_df.groupby(['category','source'])['user'].transform('count')
 
-        result = hist_df[["category","counts"]].drop_duplicates()
+        result = hist_df[["category","source","counts"]].drop_duplicates()
         result['counts_pct'] = result.counts / result.counts.sum()
 
         print(result)
 
-        result.loc[result['counts'] < 300, 'category'] = 'Other category' # Represent only large countries
+        result.loc[result['counts'] < 15, 'category'] = 'Other category' # Represent only large countries
         fig = px.pie(result, values='counts', names='category', title=inner_title)
         fig.show()
 

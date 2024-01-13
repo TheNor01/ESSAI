@@ -174,6 +174,10 @@ class BertTopicClass:
 
     def SuggestLabels(self,text,candidate_labels):
         classifier_EXT = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+        print("CANDIDATED LABELS ARE:")
+        print(*candidate_labels, sep='\n')
+        print("======")
+        print("using zero shot classification bert")
         output_labels = classifier_EXT(text, candidate_labels)
 
         return output_labels

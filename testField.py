@@ -7,6 +7,13 @@ from essai.bin.modules.RetriverSingle import RetrieverSingle
 import pickle
 from essai.bin.modules.LLModel import LLModel
 
+def pretty_print_docs(docs):
+    print(
+        f"\n{'-' * 100}\n".join(
+            [f"Document {i+1}:\n\n" + d.page_content for i, d in enumerate(docs)]
+        )
+    )
+
 settings.init()
 persist_directory = settings.persist_directory+"init_dataset"+"/"
 embed_model = settings.embed_model
@@ -15,6 +22,11 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 
 #collection=ChromaDB.CLIENT.get(include=["documents","metadatas"])
 
+retriever = RetrieverSingle(ChromaDB)
+#docs = retriever.ComposedQuery()
+docs = retriever.BuildRetrieverDb("My dog is sick","similarity_score_threshold",5,0.2)
+
+pretty_print_docs(docs)
 
 
 #BERT_NAME = settings.bert_name
@@ -34,10 +46,10 @@ ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
 #BERT.Genereate_WC(0)
 #BERT.GenerateTopioChart()
 
-ChromaDB.HistogramUsersTopics()
+#ChromaDB.HistogramUsersTopics()
 #BERT.Genereate_WC(11)
 
-mygpt = LLModel(ChromaDB)
+#mygpt = LLModel(ChromaDB)
 
 #docs = mygpt.SelfQuery("I want to know what article user 4a2bd reads")
 #docs = mygpt.SelfQuery("Give me some food documents created in year 2024")
@@ -49,4 +61,4 @@ mygpt = LLModel(ChromaDB)
 #pretty_print_docs(docs)
 
 
-docs = mygpt.RagQA("Give me 5 healthy food")
+#docs = mygpt.RagQA("Give me 5 healthy food")

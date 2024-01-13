@@ -87,7 +87,9 @@ async def send_value(visited_url) -> None:
         'created_at_year' : created_at_year,
         'created_at_month':  created_at_month,
         'created_at_day': created_at_day ,
+        'source' : visited_url
     }
+
 
     print(custom_metadata)
 

@@ -12,6 +12,7 @@ def singleton(cls):
     return get_instance
 
 
+#TODO mettere dentro LLM
 
 @singleton
 class RetrieverSingle():
@@ -48,7 +49,7 @@ class RetrieverSingle():
     # where: A Where type dict used to filter results by. E.g. `{"$and": ["color" : "red", "price": {"$gte": 4.20}]}`. Optional.
     # where_document: A WhereDocument type dict used to filter by the documents. E.g. `{$contains: {"text": "hello"}}`. Optional.
     
-    def ComposedQuery(self,dictQuery):
+    def ComposedQuery(self,dictQuery=None):
 
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
         #ChromaDB.CLIENT.get(where={"status": "read"}, where_document={"$contains": "affairs"})
@@ -56,37 +57,41 @@ class RetrieverSingle():
         #ChromaDB.CLIENT.get(where={"$or": [{"author": "john"}, {"author": "jack"}]})
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"author": "john"}]})
         #ChromaDB.CLIENT.get(where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
-        self.chroma.CLIENT.get(where_document={"$contains": "Article"},
-                               where={"$and": [{"category": "chroma"}, {"$or": [{"author": "john"}, {"author": "jack"}]}]})
+
+
+        
+        
         #ChromaDB.CLIENT.get(where={'author': {'$in': ['john', 'jill']}})
-        docs = self.chroma.CLIENT.get(where=dictQuery)
+        docs = self.chroma.CLIENT.get(limit=5,
+                               where_document={"$contains": "ferrari"},
+                               where={"$and": [{"category": "automotive"}, {"$or": [{"user": "32aeb"}, {"user": "ccb05"}]}]},
+                               include=["documents"])
         return docs
 
 
     def BuildRetrieverDb(self,text,*args):
 
-        retriever_db = self.chroma.as_retriever()
-        _search_type = None
-        _k_limit = None
-        _score_threshold = None
+        retriever_db = None
+        #_search_type = None
+        #_k_limit = None
+        #_score_threshold = None
 
-        if(args > 0):
-            _search_type = args[0]
-            _k_limit = args[1]
-            _score_threshold = args[2]
+        _search_type = args[0]
+        _k_limit = args[1]
+        _score_threshold = args[2]
 
-            if(_search_type=="score_threshold"):
-                retriever_db = self.chroma.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit,"score_threshold": _score_threshold})
-            elif(_search_type=="mmr"):
-                #retriever_db = self.chroma.as_retriever(search_type="_search_type")
-                retriever_db = self.chroma.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit})
-
-            print("USING RETRIEVER DB")
-            print("SEARCH TYPE = "+_search_type)
-            print("K LIMIT = "+_k_limit)
-            print("SCORE threshold = "+_score_threshold)
+        if(_search_type=="similarity_score_threshold"):
+            retriever_db = self.chroma.CLIENT.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit,"score_threshold": _score_threshold})
+        elif(_search_type=="mmr"):
+            retriever_db = self.chroma.CLIENT.as_retriever(search_type=_search_type,search_kwargs={"k": _k_limit})
         else:
-            print("DEFAULT RETRIEVER")
+            "SELECT A search type"
+            return None
+
+        print("USING RETRIEVER DB")
+        print("SEARCH TYPE = "+_search_type)
+        print("K LIMIT = ",_k_limit)
+        print("SCORE threshold = ",_score_threshold)
 
 
         docs = retriever_db.get_relevant_documents(text)
