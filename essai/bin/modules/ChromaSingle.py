@@ -90,7 +90,8 @@ class ChromaClass:
         print(result)
 
         result.loc[result['counts'] < 15, 'category'] = 'Other category' # Represent only large countries
-        fig = px.pie(result, values='counts', names='category', title=inner_title)
+        result = result.rename(columns={'counts': 'users'})
+        fig = px.pie(result, values='users', names='category', title=inner_title)
         fig.show()
 
         return
