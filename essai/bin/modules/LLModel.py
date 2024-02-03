@@ -1,24 +1,18 @@
 
 from langchain.retrievers.self_query.base import SelfQueryRetriever
 from langchain.retrievers.self_query.chroma import ChromaTranslator
-from langchain.prompts import ChatPromptTemplate
 from langchain.chains.query_constructor.base import AttributeInfo
 from langchain.llms import GPT4All
-from operator import itemgetter
 from langchain.prompts import PromptTemplate
-from langchain.schema import Document
 from langchain import hub
-from langchain_core.runnables import RunnablePassthrough,RunnableParallel,RunnableBranch
+from langchain_core.runnables import RunnablePassthrough,RunnableParallel
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import LLMChainExtractor
-from operator import itemgetter
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 from langchain.chains.query_constructor.base import (
-    StructuredQueryOutputParser,
-    get_query_constructor_prompt,
     load_query_constructor_runnable
 )
 

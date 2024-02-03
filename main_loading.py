@@ -1,14 +1,11 @@
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
+#from langchain.vectorstores import Chroma
 from essai.bin.modules.LoaderEmbeddings import InitChromaDocsFromPath
 import os
 from essai.bin.transformersCustom.ConvertAndFormatDataset import process_directory
-import chromadb
 from datetime import datetime
 from essai.config import settings
+from essai.bin.modules.ChromaSingle import ChromaClass
 from tqdm import tqdm
-from langchain.indexes import SQLRecordManager, index
-from chromadb.config import Settings
 #SingleTon Chroma cross interface
 
 
@@ -44,6 +41,13 @@ if __name__ == '__main__':
     destination_directory = "essai/dataset_transformed/"+basenameDataset+"_"+str(ts)
     custom_headers = ["content", "user","category","created_at_year","created_at_month","created_at_day"]
 
+    settings.init()
+    persist_directory = settings.persist_directory+"init_dataset"+"/"
+    embed_model = settings.embed_model
+    collection_name_local = settings.collection_name
+
+    ChromaDB = ChromaClass(persist_directory,embed_model,collection_name_local)
+
     if(PREPROCESS==1):
         if os.path.isdir(source_directory):
             #convert folder of txt files into csv
@@ -61,7 +65,7 @@ if __name__ == '__main__':
     if LOAD_DOCS==1:
         #os.remove(settings.persist_directory+basenameDataset+"/") capire con chroma
         for split_docs_chunk in tqdm(split_docs_chunked):
-            vectordb = Chroma.from_documents(
+            vectordb =  ChromaDB.CLIENT.from_documents(
                 documents=split_docs_chunk,
                 embedding=embed_model,
                 collection_name = collection_name_local,
@@ -78,5 +82,6 @@ if __name__ == '__main__':
         print(vectordb._collection.name)
         print(vectordb._collection.id)
 
+        users = ChromaDB.GetListOfUsers()
 
         

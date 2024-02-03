@@ -1,4 +1,3 @@
-import nltk
 import re
 import string
 from nltk.tokenize import word_tokenize, sent_tokenize

@@ -1,6 +1,5 @@
 import os
 import csv
-import uuid
 from datetime import datetime
 from essai.bin.modules.Cleaner import clean_text
 from essai.config import settings
